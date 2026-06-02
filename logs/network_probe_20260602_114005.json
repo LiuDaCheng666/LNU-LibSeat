@@ -1,0 +1,12 @@
+{
+  "started_at_bj": "2026-06-02T11:40:05.902883+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间"
+  },
+  "login_ok": true,
+  "enter_room_ok": false,
+  "requests_count": 0,
+  "requests": [],
+  "finished_at_bj": "2026-06-02T11:40:16.648056+08:00"
+}

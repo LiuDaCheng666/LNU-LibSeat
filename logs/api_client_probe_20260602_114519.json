@@ -1,0 +1,21 @@
+{
+  "started_at_bj": "2026-06-02T11:45:19.280829+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "building_id": 2,
+    "date": "2026-06-02"
+  },
+  "login_ok": true,
+  "token": {
+    "found": true,
+    "length": 48
+  },
+  "room_stats": {
+    "count": 0,
+    "sample": []
+  },
+  "success": false,
+  "error": "RuntimeError: target room not found",
+  "finished_at_bj": "2026-06-02T11:45:37.270200+08:00"
+}

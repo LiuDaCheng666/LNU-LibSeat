@@ -1,0 +1,399 @@
+{
+  "started_at_bj": "2026-06-02T11:55:13.396438+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "date": "2026-06-02",
+    "building_id": 2
+  },
+  "login": {
+    "success": true,
+    "failure_reason": null
+  },
+  "token": {
+    "found": true,
+    "length": 48
+  },
+  "floors": {
+    "count": 6
+  },
+  "room_stats": {
+    "count": 8,
+    "sample_rooms": [
+      "二楼书库北",
+      "二楼书库南",
+      "二楼背诵长廊",
+      "三楼智慧研修空间",
+      "三楼理科书库",
+      "四楼北自习室",
+      "四楼南自习室",
+      "四楼自习室406"
+    ]
+  },
+  "target_room": {
+    "roomId": 30,
+    "free": 61,
+    "reserved": 1,
+    "inUse": 173,
+    "away": 0,
+    "totalSeats": 244,
+    "disableSeat": 9,
+    "maxHour": 6
+  },
+  "layout": {
+    "seat_count": 244,
+    "cols": 29,
+    "rows": 26
+  },
+  "scan": {
+    "elapsed_seconds": 4.29,
+    "available_count": 163,
+    "available_sample": [
+      {
+        "seat_num": "17288",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17289",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17290",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "20:00",
+          "21:00"
+        ],
+        "end_times": [
+          "21:00",
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17291",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "16:00"
+        ],
+        "end_times": [
+          "17:00"
+        ]
+      },
+      {
+        "seat_num": "17292",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "16:00",
+          "21:00"
+        ],
+        "end_times": [
+          "17:00"
+        ]
+      },
+      {
+        "seat_num": "17294",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "14:00",
+          "21:00"
+        ],
+        "end_times": [
+          "15:00"
+        ]
+      },
+      {
+        "seat_num": "17295",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17296",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "15:00"
+        ],
+        "end_times": [
+          "16:00"
+        ]
+      },
+      {
+        "seat_num": "17298",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "13:00",
+          "14:00",
+          "21:00"
+        ],
+        "end_times": [
+          "14:00",
+          "15:00"
+        ]
+      },
+      {
+        "seat_num": "17299",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "12:00"
+        ],
+        "end_times": [
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17300",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "13:00"
+        ],
+        "end_times": [
+          "14:00"
+        ]
+      },
+      {
+        "seat_num": "17302",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55"
+        ],
+        "end_times": [
+          "12:00"
+        ]
+      },
+      {
+        "seat_num": "17303",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55"
+        ],
+        "end_times": [
+          "12:00"
+        ]
+      },
+      {
+        "seat_num": "17304",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "20:00",
+          "21:00"
+        ],
+        "end_times": [
+          "21:00",
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17305",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17306",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55"
+        ],
+        "end_times": [
+          "12:00"
+        ]
+      },
+      {
+        "seat_num": "17307",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55"
+        ],
+        "end_times": [
+          "12:00"
+        ]
+      },
+      {
+        "seat_num": "17310",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17311",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00",
+          "13:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00",
+          "14:00"
+        ]
+      },
+      {
+        "seat_num": "17313",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00",
+          "13:00",
+          "14:00",
+          "21:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00",
+          "14:00",
+          "15:00"
+        ]
+      },
+      {
+        "seat_num": "17314",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00",
+          "21:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17315",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17316",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17318",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "13:00",
+          "20:00",
+          "21:00"
+        ],
+        "end_times": [
+          "14:00"
+        ]
+      },
+      {
+        "seat_num": "17319",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      },
+      {
+        "seat_num": "17321",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00",
+          "13:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00",
+          "14:00"
+        ]
+      },
+      {
+        "seat_num": "17322",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17324",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00",
+          "13:00",
+          "20:00",
+          "21:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00",
+          "14:00"
+        ]
+      },
+      {
+        "seat_num": "17326",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "11:55",
+          "12:00"
+        ],
+        "end_times": [
+          "12:00",
+          "13:00"
+        ]
+      },
+      {
+        "seat_num": "17327",
+        "room_name": "三楼智慧研修空间",
+        "start_times": [
+          "21:00"
+        ],
+        "end_times": [
+          "22:00"
+        ]
+      }
+    ]
+  },
+  "success": true,
+  "finished_at_bj": "2026-06-02T11:55:21.964278+08:00"
+}

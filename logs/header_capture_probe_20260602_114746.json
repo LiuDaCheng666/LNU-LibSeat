@@ -1,0 +1,36 @@
+{
+  "count": 2,
+  "requests": [
+    {
+      "kind": "xhr",
+      "method": "POST",
+      "url": "http://libseat.lnu.edu.cn/rest/v2/room/floors/2?token=***",
+      "status": 200,
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Authorization": "***",
+        "Content-Type": "application/json",
+        "X-hmac-request-key": "934a60c7570f2174931a0e1fe5672b3a767ca1593c2e996f043fc511b00670f2",
+        "X-request-date": 1780372069482,
+        "X-request-id": "b2b8f32d-5a77-407f-836f-d2b3e2ec8eab",
+        "loginType": "PC"
+      },
+      "body_preview": "{\"status\":\"success\",\"data\":[{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":9,\"floorName\":\"1楼层\",\"floorNum\":1},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":2,\"floorName\":\"2楼层\",\"floorNum\":2},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":3,\"floorName\":\"3楼层\",\"floorNum\":3},{\"buildingId\":2,\"building\":\"崇"
+    },
+    {
+      "kind": "xhr",
+      "method": "GET",
+      "url": "http://libseat.lnu.edu.cn/rest/v2/room/stats2/2/2026-06-02?buildingId=2&date=2026-06-02&token=***",
+      "status": 200,
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Authorization": "***",
+        "X-hmac-request-key": "9a98ac59bc47e9771bc37fa18bd4946e4e88221381c19b6290e41362167a202b",
+        "X-request-date": 1780372069523,
+        "X-request-id": "e322994f-9dad-459c-8249-804f6be4fda2",
+        "loginType": "PC"
+      },
+      "body_preview": "{\"status\":\"success\",\"data\":[{\"roomId\":12,\"room\":\"二楼书库北\",\"floor\":2,\"maxHour\":6,\"reserved\":0,\"inUse\":62,\"away\":0,\"totalSeats\":180,\"free\":118,\"disableSeat\":0,\"offsetTop\":\"0\",\"offsetLeft\":\"0\",\"angle\":\"0\",\"window\":false,\"power\":false,\"computer\":false},{\"roomId\":11,\"room\":\"二楼书库南\",\"floor\":2,\"maxHour\":6,\"re"
+    }
+  ]
+}

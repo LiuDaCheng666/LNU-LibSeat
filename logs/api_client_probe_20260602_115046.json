@@ -1,0 +1,115 @@
+{
+  "started_at_bj": "2026-06-02T11:50:46.983022+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "building_id": 2,
+    "date": "2026-06-02"
+  },
+  "login_ok": true,
+  "token": {
+    "found": true,
+    "length": 48
+  },
+  "floors": {
+    "count": 6
+  },
+  "room_stats": {
+    "count": 8,
+    "sample": [
+      "二楼书库北",
+      "二楼书库南",
+      "二楼背诵长廊",
+      "三楼智慧研修空间",
+      "三楼理科书库",
+      "四楼北自习室",
+      "四楼南自习室",
+      "四楼自习室406"
+    ]
+  },
+  "target_room": {
+    "roomId": 30,
+    "free": 62,
+    "totalSeats": 244,
+    "keys": [
+      "roomId",
+      "room",
+      "floor",
+      "maxHour",
+      "reserved",
+      "inUse",
+      "away",
+      "totalSeats",
+      "free",
+      "disableSeat",
+      "offsetTop",
+      "offsetLeft",
+      "angle",
+      "window",
+      "power",
+      "computer"
+    ]
+  },
+  "layout": {
+    "seat_count": 244,
+    "sample_seat_ids": [
+      "17286",
+      "17287",
+      "17290",
+      "17291",
+      "17294",
+      "17295",
+      "17298",
+      "17299",
+      "17302",
+      "17303"
+    ],
+    "keys": [
+      "id",
+      "name",
+      "cols",
+      "rows",
+      "layout"
+    ]
+  },
+  "seat_time_checks": [
+    {
+      "seat_id": "17286",
+      "start_status": "success",
+      "start_message": "",
+      "start_count": 0,
+      "start_sample": [],
+      "end_count": 0,
+      "end_sample": []
+    },
+    {
+      "seat_id": "17287",
+      "start_status": "success",
+      "start_message": "",
+      "start_count": 0,
+      "start_sample": [],
+      "end_count": 0,
+      "end_sample": []
+    },
+    {
+      "seat_id": "17290",
+      "start_status": "success",
+      "start_message": "",
+      "start_count": 2,
+      "start_sample": [
+        "20:00",
+        "21:00"
+      ],
+      "end_count": 2,
+      "end_sample": [
+        "21:00",
+        "22:00"
+      ],
+      "end_status": "success",
+      "end_message": ""
+    }
+  ],
+  "seat_time_success": true,
+  "success": true,
+  "finished_at_bj": "2026-06-02T11:50:50.572757+08:00"
+}

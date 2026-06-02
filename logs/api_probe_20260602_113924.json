@@ -1,0 +1,36 @@
+{
+  "started_at_bj": "2026-06-02T11:39:24.718097+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "primary_building_id": 2,
+    "date": "2026-06-02"
+  },
+  "login": {
+    "success": true,
+    "failure_reason": null
+  },
+  "token": {
+    "found": true,
+    "length": 48
+  },
+  "api": {
+    "building_checks": [
+      {
+        "building_id": 2,
+        "room_count": 0,
+        "matched_target": false,
+        "sample_rooms": []
+      },
+      {
+        "building_id": 1,
+        "room_count": 0,
+        "matched_target": false,
+        "sample_rooms": []
+      }
+    ]
+  },
+  "success": false,
+  "error": "RuntimeError: room_stats ????????? building ????????",
+  "finished_at_bj": "2026-06-02T11:39:28.399081+08:00"
+}

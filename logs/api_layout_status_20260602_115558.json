@@ -1,0 +1,1240 @@
+{
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "date": "2026-06-02",
+    "roomId": 30
+  },
+  "room_stats": {
+    "free": 61,
+    "reserved": 1,
+    "inUse": 173,
+    "away": 0,
+    "totalSeats": 244,
+    "disableSeat": 9
+  },
+  "layout": {
+    "seat_count": 244,
+    "status_counts": {
+      "IN_USE": 171,
+      "FREE": 60,
+      "FULL": 12,
+      "BOOKED": 1
+    },
+    "type_counts": {
+      "seat": 244
+    },
+    "enabled_counts": {
+      "True": 235,
+      "False": 9
+    },
+    "sample_seats": [
+      {
+        "pos": "1001",
+        "id": 17286,
+        "label": "1",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1002",
+        "id": 17287,
+        "label": "2",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1003",
+        "id": 17290,
+        "label": "5",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1004",
+        "id": 17291,
+        "label": "6",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1006",
+        "id": 17294,
+        "label": "9",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1007",
+        "id": 17295,
+        "label": "10",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1008",
+        "id": 17298,
+        "label": "13",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1009",
+        "id": 17299,
+        "label": "14",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1012",
+        "id": 17302,
+        "label": "17",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1013",
+        "id": 17303,
+        "label": "18",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1014",
+        "id": 17306,
+        "label": "21",
+        "status": "FULL",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1015",
+        "id": 17307,
+        "label": "22",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1017",
+        "id": 17310,
+        "label": "25",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1018",
+        "id": 17311,
+        "label": "26",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1019",
+        "id": 17314,
+        "label": "29",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1020",
+        "id": 17315,
+        "label": "30",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2001",
+        "id": 17288,
+        "label": "3",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2002",
+        "id": 17289,
+        "label": "4",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2003",
+        "id": 17292,
+        "label": "7",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2004",
+        "id": 17293,
+        "label": "8",
+        "status": "IN_USE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      }
+    ]
+  },
+  "current_free_by_layout": {
+    "count": 60,
+    "sample": [
+      {
+        "pos": "1012",
+        "id": 17302,
+        "label": "17",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1013",
+        "id": 17303,
+        "label": "18",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1015",
+        "id": 17307,
+        "label": "22",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1018",
+        "id": 17311,
+        "label": "26",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "1019",
+        "id": 17314,
+        "label": "29",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2001",
+        "id": 17288,
+        "label": "3",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2002",
+        "id": 17289,
+        "label": "4",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "2018",
+        "id": 17313,
+        "label": "28",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "4003",
+        "id": 17322,
+        "label": "37",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "4006",
+        "id": 17326,
+        "label": "41",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "4009",
+        "id": 17331,
+        "label": "46",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "4015",
+        "id": 17339,
+        "label": "54",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "4017",
+        "id": 17342,
+        "label": "57",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "5002",
+        "id": 17321,
+        "label": "36",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "5003",
+        "id": 17324,
+        "label": "39",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "5007",
+        "id": 17329,
+        "label": "44",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "5013",
+        "id": 17337,
+        "label": "52",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "5018",
+        "id": 17345,
+        "label": "60",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "7003",
+        "id": 17354,
+        "label": "69",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "7018",
+        "id": 17375,
+        "label": "90",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "7020",
+        "id": 17379,
+        "label": "94",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "8006",
+        "id": 17360,
+        "label": "75",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "8012",
+        "id": 17368,
+        "label": "83",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "8014",
+        "id": 17372,
+        "label": "87",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "8015",
+        "id": 17373,
+        "label": "88",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "10004",
+        "id": 17383,
+        "label": "98",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "10018",
+        "id": 17403,
+        "label": "118",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "10019",
+        "id": 17406,
+        "label": "121",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "11003",
+        "id": 17384,
+        "label": "99",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "11012",
+        "id": 17396,
+        "label": "111",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "11018",
+        "id": 17405,
+        "label": "120",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "13014",
+        "id": 17430,
+        "label": "145",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "13018",
+        "id": 17435,
+        "label": "150",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "13020",
+        "id": 17439,
+        "label": "154",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "14003",
+        "id": 17416,
+        "label": "131",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "14004",
+        "id": 17417,
+        "label": "132",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "14018",
+        "id": 17437,
+        "label": "152",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "16002",
+        "id": 17443,
+        "label": "158",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "16003",
+        "id": 17446,
+        "label": "161",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      },
+      {
+        "pos": "16006",
+        "id": 17450,
+        "label": "165",
+        "status": "FREE",
+        "enabled": true,
+        "type": "seat",
+        "raw_keys": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "window",
+          "power",
+          "computer",
+          "local",
+          "enabled",
+          "direction"
+        ]
+      }
+    ]
+  },
+  "finished_at_bj": "2026-06-02T11:56:02.494902+08:00"
+}

@@ -1,0 +1,58 @@
+{
+  "started_at_bj": "2026-06-02T11:37:56.111139+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间",
+    "building_id": 1,
+    "date": "2026-06-02"
+  },
+  "login_ok": true,
+  "page": {
+    "href": "http://libseat.lnu.edu.cn/libseat/#/home",
+    "title": "座位预约系统",
+    "localStorage": [
+      {
+        "key": "libseat-m-firstLogin",
+        "len": 4,
+        "preview": "",
+        "interesting": false
+      }
+    ],
+    "sessionStorage": [
+      {
+        "key": "libseat-m-firstLogin",
+        "len": 4,
+        "preview": "",
+        "interesting": false
+      },
+      {
+        "key": "libseat-m-loginType",
+        "len": 5,
+        "preview": "",
+        "interesting": false
+      },
+      {
+        "key": "libseat-m-token",
+        "len": 48,
+        "preview": "d9a6eb...3758",
+        "interesting": true
+      },
+      {
+        "key": "libseat-m-userInfo",
+        "len": 337,
+        "preview": "{\"id\":...ull}",
+        "interesting": true
+      }
+    ],
+    "cookieNames": [],
+    "bodyPreview": "周学庆\n各位读者：图书馆自2025年5月6日起开通线上预约与线下选座功能，蒲河校区图书馆三楼智慧空间将于2026年5月18日正式开放座位预约，相关事宜如下：一、预约方式线上可通过PC/移动端登录libseat.lnu.edu.cn，或关注辽宁大学图书馆公众号进入服务栏预约；线下保留原到馆刷卡选座方式。账号为校园卡号，初始密码000000，可登录opac.lnu.edu.cn&ldquo;我的图书馆&rdquo;修改。二、预约规则需按时刷卡签到，预约前后30分钟内有效；7天内累计或连续3次违约将受限7天。每日6:30-21:30可约当日座位，每日预约、取消均不超3次，单次最长可约6小时，建议提前10分钟签到。\n查看详情\n自选座位\n三楼走廊\n智慧空间\n4楼阅览室\n四楼走廊\n5楼阅览室\n五楼走廊\n6楼阅览室\n六楼走廊\n704\n706\n707\n708\n七楼走廊\n自选座位\n我的预约\n七楼走廊"
+  },
+  "requests_empty_token": {
+    "room_count": 0
+  },
+  "browser_fetch_no_token": {
+    "status": 200,
+    "text": "{\"status\":\"fail\",\"code\":\"20\",\"message\":\"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\",\"data\":null}"
+  },
+  "finished_at_bj": "2026-06-02T11:37:58.997170+08:00"
+}

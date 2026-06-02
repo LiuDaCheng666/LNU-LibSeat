@@ -1,0 +1,43 @@
+{
+  "token_before": {
+    "len": 48,
+    "prefix": "60522a",
+    "suffix": "4337"
+  },
+  "token_after": {
+    "len": 48,
+    "prefix": "60522a",
+    "suffix": "4337"
+  },
+  "captured_token": {
+    "len": 48,
+    "prefix": "60522a",
+    "suffix": "4337"
+  },
+  "before_eq_url": true,
+  "after_eq_url": true,
+  "requests": {
+    "before": {
+      "http": 200,
+      "status": "fail",
+      "code": "20",
+      "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+      "data_count": null
+    },
+    "after": {
+      "http": 200,
+      "status": "fail",
+      "code": "20",
+      "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+      "data_count": null
+    },
+    "captured": {
+      "http": 200,
+      "status": "fail",
+      "code": "20",
+      "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+      "data_count": null
+    }
+  },
+  "captured_request_count": 2
+}

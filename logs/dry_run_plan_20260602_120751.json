@@ -1,0 +1,19 @@
+{
+  "started_at_bj": "2026-06-02T12:07:51.356678+08:00",
+  "config": {
+    "campus": "崇山校区图书馆",
+    "target_room": "三楼智慧研修空间",
+    "date": "2026-06-02",
+    "configured_range": "09:00-22:00",
+    "now_bj": "2026-06-02 12:07",
+    "effective_range": "12:07-22:00",
+    "cross_room": true,
+    "priority_mode": "longest_first",
+    "preferred_seats": [],
+    "accounts_count": 1
+  },
+  "login_ok": false,
+  "success": false,
+  "error": "RuntimeError: ????",
+  "finished_at_bj": "2026-06-02T12:08:14.437849+08:00"
+}

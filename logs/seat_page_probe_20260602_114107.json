@@ -1,0 +1,90 @@
+﻿{
+  "started_at_bj": "2026-06-02T11:41:07.689125+08:00",
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间"
+  },
+  "choose_buttons": 0,
+  "choose_clicked": false,
+  "dom": {
+    "url": "http://libseat.lnu.edu.cn/libseat/#/home",
+    "room_name_count": 8,
+    "seat_name_count": 0,
+    "room_samples": [
+      "二楼书库北",
+      "二楼书库南",
+      "二楼背诵长廊",
+      "三楼智慧研修空间",
+      "三楼理科书库",
+      "四楼北自习室",
+      "四楼南自习室",
+      "四楼自习室406"
+    ],
+    "body_preview": "周学庆\n2026-06-02 周二\n11:41:15\n各位读者：图书馆自2025年5月6日起开通线上预约与线下选座功能，蒲河校区图书馆三楼智慧空间将于2026年5月18日正式开放座位预约，相关事宜如下：一、预约方式线上可通过PC/移动端登录libseat.lnu.edu.cn，或关注辽宁大学图书馆公众号进入服务栏预约；线下保留原到馆刷卡选座方式。账号为校园卡号，初始密码000000，可登录opac.lnu.edu.cn&ldquo;我的图书馆&rdquo;修改。二、预约规则需按时刷卡签到，预约前后30分钟内有效；7天内累计或连续3次违约将受限7天。每日6:30-21:30可约当日座位，每日预约、取消均不超3次，单次最长可约6小时，建议提前10分钟签到。\n查看详情\n自选座位\n二楼书库北\n二楼书库南\n二楼背诵长廊\n三楼智慧研修空间\n三楼理科书库\n四楼北自习室\n四楼南自习室\n四楼自习室406\n自选座位\n我的预约"
+  },
+  "target_room_clicked": true,
+  "after_room_click": {
+    "url": "http://libseat.lnu.edu.cn/libseat/#/home",
+    "seat_name_count": 244,
+    "seat_samples": [
+      "1",
+      "3",
+      "33",
+      "35",
+      "65",
+      "67",
+      "125",
+      "127",
+      "157",
+      "159",
+      "189",
+      "191",
+      "2",
+      "4",
+      "34",
+      "36",
+      "66",
+      "68",
+      "126",
+      "128"
+    ]
+  },
+  "requests_count": 3,
+  "requests": [
+    {
+      "method": "POST",
+      "url": "http://libseat.lnu.edu.cn/rest/v2/room/floors/2?token=***",
+      "status": 200,
+      "body_len": 542,
+      "body_preview": "{\"status\":\"success\",\"data\":[{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":9,\"floorName\":\"1楼层\",\"floorNum\":1},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":2,\"floorName\":\"2楼层\",\"floorNum\":2},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":3,\"floorName\":\"3楼层\",\"floorNum\":3},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":10,\"floorName\":\"4楼层\",\"floorNum\":4},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":11,\"floorName\":\"5楼层\",\"floorNum\":5},{\"buildingId\":2,\"building\":\"崇山校区图书馆\",\"floorId\":12,\"floorName\":\"6楼",
+      "flags": [
+        "seat",
+        "room"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "http://libseat.lnu.edu.cn/rest/v2/room/stats2/2/2026-06-02?buildingId=2&date=2026-06-02&token=***",
+      "status": 200,
+      "body_len": 1793,
+      "body_preview": "{\"status\":\"success\",\"data\":[{\"roomId\":12,\"room\":\"二楼书库北\",\"floor\":2,\"maxHour\":6,\"reserved\":0,\"inUse\":58,\"away\":0,\"totalSeats\":180,\"free\":122,\"disableSeat\":0,\"offsetTop\":\"0\",\"offsetLeft\":\"0\",\"angle\":\"0\",\"window\":false,\"power\":false,\"computer\":false},{\"roomId\":11,\"room\":\"二楼书库南\",\"floor\":2,\"maxHour\":6,\"reserved\":0,\"inUse\":55,\"away\":0,\"totalSeats\":148,\"free\":93,\"disableSeat\":0,\"offsetTop\":\"0\",\"offsetLeft\":\"0\",\"angle\":\"0\",\"window\":false,\"power\":false,\"computer\":false},{\"roomId\":32,\"room\":\"二楼背诵长廊\",\"floor",
+      "flags": [
+        "seat",
+        "room"
+      ]
+    },
+    {
+      "method": "GET",
+      "url": "http://libseat.lnu.edu.cn/rest/v2/room/layoutByDate/30/2026-06-02?id=30&date=2026-06-02&token=***",
+      "status": 200,
+      "body_len": 3000,
+      "body_preview": "{\"status\":\"success\",\"data\":{\"id\":30,\"name\":\"三楼智慧研修空间\",\"cols\":29,\"rows\":26,\"layout\":{\"0\":{\"type\":\"empty\"},\"1\":{\"type\":\"empty\"},\"2\":{\"type\":\"empty\"},\"3\":{\"type\":\"empty\"},\"4\":{\"type\":\"empty\"},\"5\":{\"type\":\"empty\"},\"6\":{\"type\":\"empty\"},\"7\":{\"type\":\"empty\"},\"8\":{\"type\":\"empty\"},\"9\":{\"type\":\"empty\"},\"10\":{\"type\":\"empty\"},\"11\":{\"type\":\"empty\"},\"12\":{\"type\":\"empty\"},\"13\":{\"type\":\"empty\"},\"14\":{\"type\":\"empty\"},\"15\":{\"type\":\"empty\"},\"16\":{\"type\":\"empty\"},\"17\":{\"type\":\"empty\"},\"18\":{\"type\":\"empty\"},\"19\":{\"t",
+      "flags": [
+        "seat",
+        "room",
+        "layout"
+      ]
+    }
+  ],
+  "finished_at_bj": "2026-06-02T11:41:19.420683+08:00"
+}

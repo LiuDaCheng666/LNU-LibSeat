@@ -1,0 +1,20 @@
+{
+  "started_at_bj": "2026-06-02T11:37:01.047693+08:00",
+  "config_present": true,
+  "login": {
+    "success": true,
+    "failure_reason": null
+  },
+  "token": {
+    "found": false,
+    "length": 0
+  },
+  "api": {},
+  "target": {
+    "campus": "崇山校区图书馆",
+    "room": "三楼智慧研修空间"
+  },
+  "success": false,
+  "error": "RuntimeError: ????????? API token",
+  "finished_at_bj": "2026-06-02T11:37:08.849484+08:00"
+}
