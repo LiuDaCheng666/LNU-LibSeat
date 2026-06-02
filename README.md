@@ -359,21 +359,6 @@ LNU-LibSeat/
 
 ---
 
-## ☁️ 上传 GitHub 前的建议
-
-推荐上传源码、文档和 `requirements.txt`。不建议上传：
-
-- `env/`
-- `build/`
-- `dist/`
-- `logs/`
-- `__pycache__/`
-- `single_runtime_state.json`
-- 含真实账号密码的 `config_data.json`
-
-`env/` 不需要上传，别人运行 `run.bat` 会自动重建环境。
-
----
 
 ## ⚖️ 免责声明
 
