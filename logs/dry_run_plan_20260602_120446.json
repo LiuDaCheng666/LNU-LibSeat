@@ -1,0 +1,1832 @@
+{
+  "started_at_bj": "2026-06-02T12:04:46.661096+08:00",
+  "config": {
+    "campus": "崇山校区图书馆",
+    "target_room": "三楼智慧研修空间",
+    "date": "2026-06-02",
+    "configured_range": "09:00-22:00",
+    "now_bj": "2026-06-02 12:04",
+    "effective_range": "12:04-22:00",
+    "cross_room": true,
+    "priority_mode": "longest_first",
+    "preferred_seats": [],
+    "accounts_count": 1
+  },
+  "login_ok": true,
+  "token": {
+    "found": true,
+    "length": 48
+  },
+  "rooms_scanned": [
+    {
+      "room": "三楼智慧研修空间",
+      "roomId": 30,
+      "layout_seat_count": 244,
+      "interval_count": 309,
+      "best_per_seat_count": 144,
+      "top": {
+        "seat_id": "17415",
+        "seat_num": "130",
+        "room_name": "三楼智慧研修空间",
+        "start": "13:00",
+        "end": "16:00",
+        "duration_minutes": 180,
+        "raw_start": "13:00",
+        "raw_end": "16:00",
+        "status": "IN_USE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "130",
+          "seat_id": "17415",
+          "start": "13:00",
+          "end": "16:00",
+          "duration_minutes": 180,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "28",
+          "seat_id": "17313",
+          "start": "12:04",
+          "end": "15:00",
+          "duration_minutes": 176,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "46",
+          "seat_id": "17331",
+          "start": "12:04",
+          "end": "15:00",
+          "duration_minutes": 176,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "44",
+          "seat_id": "17329",
+          "start": "12:04",
+          "end": "15:00",
+          "duration_minutes": 176,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "87",
+          "seat_id": "17372",
+          "start": "12:04",
+          "end": "15:00",
+          "duration_minutes": 176,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "88",
+          "seat_id": "17373",
+          "start": "12:04",
+          "end": "15:00",
+          "duration_minutes": 176,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "5",
+          "seat_id": "17290",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "13",
+          "seat_id": "17298",
+          "start": "13:00",
+          "end": "15:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "19",
+          "seat_id": "17304",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "33",
+          "seat_id": "17318",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "57",
+          "seat_id": "17342",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "39",
+          "seat_id": "17324",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "65",
+          "seat_id": "17350",
+          "start": "16:00",
+          "end": "18:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "60",
+          "seat_id": "17345",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "81",
+          "seat_id": "17366",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "69",
+          "seat_id": "17354",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "79",
+          "seat_id": "17364",
+          "start": "14:00",
+          "end": "16:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "90",
+          "seat_id": "17375",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "80",
+          "seat_id": "17365",
+          "start": "14:00",
+          "end": "16:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼智慧研修空间",
+          "seat_num": "122",
+          "seat_id": "17407",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "二楼书库北",
+      "roomId": 12,
+      "layout_seat_count": 180,
+      "interval_count": 3040,
+      "best_per_seat_count": 167,
+      "top": {
+        "seat_id": "16022",
+        "seat_num": "165",
+        "room_name": "二楼书库北",
+        "start": "16:00",
+        "end": "22:00",
+        "duration_minutes": 360,
+        "raw_start": "16:00",
+        "raw_end": "22:00",
+        "status": "IN_USE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "165",
+          "seat_id": "16022",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "11",
+          "seat_id": "15868",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "177",
+          "seat_id": "16034",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "141",
+          "seat_id": "15998",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "156",
+          "seat_id": "16013",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "153",
+          "seat_id": "16010",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "144",
+          "seat_id": "16001",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "129",
+          "seat_id": "15986",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "120",
+          "seat_id": "15977",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "105",
+          "seat_id": "15962",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "84",
+          "seat_id": "15941",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "81",
+          "seat_id": "15938",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "12",
+          "seat_id": "15869",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "45",
+          "seat_id": "15902",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "36",
+          "seat_id": "15893",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "21",
+          "seat_id": "15878",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "9",
+          "seat_id": "15866",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "175",
+          "seat_id": "16032",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "151",
+          "seat_id": "16008",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库北",
+          "seat_num": "139",
+          "seat_id": "15996",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "二楼书库南",
+      "roomId": 11,
+      "layout_seat_count": 148,
+      "interval_count": 3394,
+      "best_per_seat_count": 142,
+      "top": {
+        "seat_id": "13203",
+        "seat_num": "97",
+        "room_name": "二楼书库南",
+        "start": "16:00",
+        "end": "22:00",
+        "duration_minutes": 360,
+        "raw_start": "16:00",
+        "raw_end": "22:00",
+        "status": "IN_USE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "97",
+          "seat_id": "13203",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "121",
+          "seat_id": "13227",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "BOOKED",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "139",
+          "seat_id": "15844",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "87",
+          "seat_id": "13193",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "61",
+          "seat_id": "13167",
+          "start": "14:00",
+          "end": "20:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "75",
+          "seat_id": "13181",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "37",
+          "seat_id": "13142",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "73",
+          "seat_id": "13179",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "15",
+          "seat_id": "13120",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "3",
+          "seat_id": "13108",
+          "start": "14:00",
+          "end": "20:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "1",
+          "seat_id": "13106",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "110",
+          "seat_id": "13216",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "138",
+          "seat_id": "15843",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "74",
+          "seat_id": "13180",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "112",
+          "seat_id": "13218",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "122",
+          "seat_id": "13228",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "124",
+          "seat_id": "13230",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "25",
+          "seat_id": "13130",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "76",
+          "seat_id": "13182",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼书库南",
+          "seat_num": "50",
+          "seat_id": "13156",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "二楼背诵长廊",
+      "roomId": 32,
+      "layout_seat_count": 30,
+      "interval_count": 652,
+      "best_per_seat_count": 28,
+      "top": {
+        "seat_id": "17696",
+        "seat_num": "B-06-1",
+        "room_name": "二楼背诵长廊",
+        "start": "13:00",
+        "end": "19:00",
+        "duration_minutes": 360,
+        "raw_start": "13:00",
+        "raw_end": "19:00",
+        "status": "FREE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-06-1",
+          "seat_id": "17696",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-05-1",
+          "seat_id": "17694",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-04-1",
+          "seat_id": "17692",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-03-1",
+          "seat_id": "17690",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-02-1",
+          "seat_id": "17688",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-02-2",
+          "seat_id": "17671",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-01-1",
+          "seat_id": "17686",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-01-1",
+          "seat_id": "17670",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-02-1",
+          "seat_id": "17672",
+          "start": "14:00",
+          "end": "20:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-01-2",
+          "seat_id": "17669",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-01-2",
+          "seat_id": "17685",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-06-2",
+          "seat_id": "17679",
+          "start": "12:05",
+          "end": "18:00",
+          "duration_minutes": 355,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-05-1",
+          "seat_id": "17678",
+          "start": "12:05",
+          "end": "18:00",
+          "duration_minutes": 355,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-04-1",
+          "seat_id": "17676",
+          "start": "12:05",
+          "end": "18:00",
+          "duration_minutes": 355,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-07-1",
+          "seat_id": "17698",
+          "start": "12:05",
+          "end": "17:00",
+          "duration_minutes": 295,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-04-2",
+          "seat_id": "17675",
+          "start": "12:05",
+          "end": "17:00",
+          "duration_minutes": 295,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-08-1",
+          "seat_id": "17684",
+          "start": "12:05",
+          "end": "16:00",
+          "duration_minutes": 235,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-05-2",
+          "seat_id": "17693",
+          "start": "12:05",
+          "end": "16:00",
+          "duration_minutes": 235,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "A-06-1",
+          "seat_id": "17680",
+          "start": "12:05",
+          "end": "16:00",
+          "duration_minutes": 235,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "二楼背诵长廊",
+          "seat_num": "B-04-2",
+          "seat_id": "17691",
+          "start": "12:05",
+          "end": "16:00",
+          "duration_minutes": 235,
+          "status": "FREE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "三楼理科书库",
+      "roomId": 29,
+      "layout_seat_count": 140,
+      "interval_count": 263,
+      "best_per_seat_count": 96,
+      "top": {
+        "seat_id": "17203",
+        "seat_num": "62",
+        "room_name": "三楼理科书库",
+        "start": "14:00",
+        "end": "17:00",
+        "duration_minutes": 180,
+        "raw_start": "14:00",
+        "raw_end": "17:00",
+        "status": "IN_USE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "62",
+          "seat_id": "17203",
+          "start": "14:00",
+          "end": "17:00",
+          "duration_minutes": 180,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "95",
+          "seat_id": "17238",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "138",
+          "seat_id": "17281",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "124",
+          "seat_id": "17267",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "92",
+          "seat_id": "17235",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "132",
+          "seat_id": "17275",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "17",
+          "seat_id": "17158",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "1",
+          "seat_id": "17142",
+          "start": "12:05",
+          "end": "15:00",
+          "duration_minutes": 175,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "32",
+          "seat_id": "17173",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "96",
+          "seat_id": "17239",
+          "start": "13:00",
+          "end": "15:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "78",
+          "seat_id": "17219",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "31",
+          "seat_id": "17172",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "44",
+          "seat_id": "17185",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "140",
+          "seat_id": "17283",
+          "start": "13:00",
+          "end": "15:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "126",
+          "seat_id": "17269",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "9",
+          "seat_id": "17150",
+          "start": "13:00",
+          "end": "15:00",
+          "duration_minutes": 120,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "16",
+          "seat_id": "17157",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "94",
+          "seat_id": "17237",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "27",
+          "seat_id": "17168",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "三楼理科书库",
+          "seat_num": "105",
+          "seat_id": "17248",
+          "start": "20:00",
+          "end": "22:00",
+          "duration_minutes": 120,
+          "status": "FREE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "四楼北自习室",
+      "roomId": 25,
+      "layout_seat_count": 240,
+      "interval_count": 5006,
+      "best_per_seat_count": 224,
+      "top": {
+        "seat_id": "15676",
+        "seat_num": "85",
+        "room_name": "四楼北自习室",
+        "start": "13:00",
+        "end": "19:00",
+        "duration_minutes": 360,
+        "raw_start": "13:00",
+        "raw_end": "19:00",
+        "status": "FREE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "85",
+          "seat_id": "15676",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "4",
+          "seat_id": "15594",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "62",
+          "seat_id": "15653",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "14",
+          "seat_id": "15604",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "28",
+          "seat_id": "15618",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "74",
+          "seat_id": "15665",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "98",
+          "seat_id": "15689",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "111",
+          "seat_id": "15704",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "88",
+          "seat_id": "15679",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "100",
+          "seat_id": "15691",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "135",
+          "seat_id": "15728",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "99",
+          "seat_id": "15690",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "112",
+          "seat_id": "15705",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "5",
+          "seat_id": "15595",
+          "start": "15:00",
+          "end": "21:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "18",
+          "seat_id": "15608",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "17",
+          "seat_id": "15607",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "29",
+          "seat_id": "15619",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "52",
+          "seat_id": "15642",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "6",
+          "seat_id": "15596",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼北自习室",
+          "seat_num": "90",
+          "seat_id": "15681",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "四楼南自习室",
+      "roomId": 24,
+      "layout_seat_count": 336,
+      "interval_count": 8007,
+      "best_per_seat_count": 321,
+      "top": {
+        "seat_id": "15081",
+        "seat_num": "193",
+        "room_name": "四楼南自习室",
+        "start": "13:00",
+        "end": "19:00",
+        "duration_minutes": 360,
+        "raw_start": "13:00",
+        "raw_end": "19:00",
+        "status": "FREE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "193",
+          "seat_id": "15081",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "229",
+          "seat_id": "15117",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "254",
+          "seat_id": "15142",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "253",
+          "seat_id": "15141",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "241",
+          "seat_id": "15129",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "217",
+          "seat_id": "15105",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "277",
+          "seat_id": "15165",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "289",
+          "seat_id": "15177",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "313",
+          "seat_id": "15202",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "219",
+          "seat_id": "15107",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "231",
+          "seat_id": "15119",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "267",
+          "seat_id": "15155",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "243",
+          "seat_id": "15131",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "315",
+          "seat_id": "15204",
+          "start": "16:00",
+          "end": "22:00",
+          "duration_minutes": 360,
+          "status": "IN_USE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "279",
+          "seat_id": "15167",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "291",
+          "seat_id": "15180",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "303",
+          "seat_id": "15192",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "323",
+          "seat_id": "15241",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "197",
+          "seat_id": "15085",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼南自习室",
+          "seat_num": "198",
+          "seat_id": "15086",
+          "start": "13:00",
+          "end": "19:00",
+          "duration_minutes": 360,
+          "status": "FREE",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "room": "四楼自习室406",
+      "roomId": 31,
+      "layout_seat_count": 120,
+      "interval_count": 4200,
+      "best_per_seat_count": 78,
+      "top": {
+        "seat_id": "17534",
+        "seat_num": "3",
+        "room_name": "四楼自习室406",
+        "start": "12:06",
+        "end": "22:00",
+        "duration_minutes": 594,
+        "raw_start": "12:06",
+        "raw_end": "22:00",
+        "status": "FREE",
+        "enabled": true
+      },
+      "top20": [
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "3",
+          "seat_id": "17534",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "19",
+          "seat_id": "17550",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "1",
+          "seat_id": "17532",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "4",
+          "seat_id": "17535",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "17",
+          "seat_id": "17548",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "51",
+          "seat_id": "17583",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "49",
+          "seat_id": "17580",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "20",
+          "seat_id": "17551",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "36",
+          "seat_id": "17567",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "5",
+          "seat_id": "17536",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "21",
+          "seat_id": "17552",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "37",
+          "seat_id": "17568",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "55",
+          "seat_id": "17587",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "39",
+          "seat_id": "17570",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "6",
+          "seat_id": "17537",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "53",
+          "seat_id": "17585",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "54",
+          "seat_id": "17586",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "22",
+          "seat_id": "17553",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "40",
+          "seat_id": "17571",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        },
+        {
+          "room_name": "四楼自习室406",
+          "seat_num": "38",
+          "seat_id": "17569",
+          "start": "12:06",
+          "end": "22:00",
+          "duration_minutes": 594,
+          "status": "FREE",
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "current_room_choice": {
+      "seat_id": "17415",
+      "seat_num": "130",
+      "room_name": "三楼智慧研修空间",
+      "start": "13:00",
+      "end": "16:00",
+      "duration_minutes": 180,
+      "raw_start": "13:00",
+      "raw_end": "16:00",
+      "status": "IN_USE",
+      "enabled": true
+    },
+    "current_room_reason": "????????",
+    "cross_room_best": {
+      "seat_id": "17534",
+      "seat_num": "3",
+      "room_name": "四楼自习室406",
+      "start": "12:06",
+      "end": "22:00",
+      "duration_minutes": 594,
+      "raw_start": "12:06",
+      "raw_end": "22:00",
+      "status": "FREE",
+      "enabled": true
+    },
+    "final_recommendation": {
+      "seat_id": "17534",
+      "seat_num": "3",
+      "room_name": "四楼自习室406",
+      "start": "12:06",
+      "end": "22:00",
+      "duration_minutes": 594,
+      "raw_start": "12:06",
+      "raw_end": "22:00",
+      "status": "FREE",
+      "enabled": true
+    },
+    "decision_note": "????????????????????????????????"
+  },
+  "success": true,
+  "finished_at_bj": "2026-06-02T12:06:21.558695+08:00"
+}

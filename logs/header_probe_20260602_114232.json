@@ -1,0 +1,95 @@
+{
+  "started_at_bj": "2026-06-02T11:42:32.316944+08:00",
+  "cases": [
+    {
+      "name": "minimal",
+      "headers": [],
+      "result": {
+        "http": 200,
+        "status": "fail",
+        "code": "20",
+        "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+        "data_type": "NoneType",
+        "data_count": null,
+        "preview": "{\"status\": \"fail\", \"code\": \"20\", \"message\": \"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\", \"data\": null}"
+      }
+    },
+    {
+      "name": "api_client_old",
+      "headers": [
+        "Accept",
+        "Accept-Language",
+        "Referer",
+        "User-Agent"
+      ],
+      "result": {
+        "http": 200,
+        "status": "fail",
+        "code": "20",
+        "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+        "data_type": "NoneType",
+        "data_count": null,
+        "preview": "{\"status\": \"fail\", \"code\": \"20\", \"message\": \"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\", \"data\": null}"
+      }
+    },
+    {
+      "name": "browser_ua_root_referer",
+      "headers": [
+        "Accept",
+        "Accept-Language",
+        "Referer",
+        "User-Agent"
+      ],
+      "result": {
+        "http": 200,
+        "status": "fail",
+        "code": "20",
+        "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+        "data_type": "NoneType",
+        "data_count": null,
+        "preview": "{\"status\": \"fail\", \"code\": \"20\", \"message\": \"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\", \"data\": null}"
+      }
+    },
+    {
+      "name": "browser_ua_libseat_referer",
+      "headers": [
+        "Accept",
+        "Accept-Language",
+        "Referer",
+        "User-Agent"
+      ],
+      "result": {
+        "http": 200,
+        "status": "fail",
+        "code": "20",
+        "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+        "data_type": "NoneType",
+        "data_count": null,
+        "preview": "{\"status\": \"fail\", \"code\": \"20\", \"message\": \"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\", \"data\": null}"
+      }
+    },
+    {
+      "name": "browser_like_full",
+      "headers": [
+        "Accept",
+        "Accept-Language",
+        "Origin",
+        "Referer",
+        "Sec-Fetch-Dest",
+        "Sec-Fetch-Mode",
+        "Sec-Fetch-Site",
+        "User-Agent"
+      ],
+      "result": {
+        "http": 200,
+        "status": "fail",
+        "code": "20",
+        "message": "请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\"一考即过座位预约\"等方式预约",
+        "data_type": "NoneType",
+        "data_count": null,
+        "preview": "{\"status\": \"fail\", \"code\": \"20\", \"message\": \"请检查手机时间是否准确,另外手机app已停用,请使用微信小程序\\\"一考即过座位预约\\\"等方式预约\", \"data\": null}"
+      }
+    }
+  ],
+  "finished_at_bj": "2026-06-02T11:42:36.173822+08:00"
+}
