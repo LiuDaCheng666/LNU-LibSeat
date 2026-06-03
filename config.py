@@ -41,8 +41,8 @@ ALLOC_NOTIFY_TIMEOUT = 300
 
 # ── 邮箱通知 ──
 RECEIVER_EMAIL = ""
-SMTP_USER = ""
-SMTP_PASS = ""
+SMTP_USER = "lnu_library@163.com"
+SMTP_PASS = "LWQWA366dd2g6msK"
 
 # ── 浏览器: "edge" | "chrome" ──
 BROWSER = "edge"
