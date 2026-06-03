@@ -121,6 +121,21 @@ def _is_seat_time_path(path: str) -> bool:
     return "/startTimesForSeat/" in path or "/endTimesForSeat/" in path
 
 
+def _is_empty_seat_time_failure(path: str, payload: dict) -> bool:
+    if not _is_seat_time_path(path) or not isinstance(payload, dict):
+        return False
+    if str(payload.get("status", "")).lower() not in ("fail", "failed"):
+        return False
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        return False
+    if "/startTimesForSeat/" in path:
+        return data.get("startTimes") == []
+    if "/endTimesForSeat/" in path:
+        return data.get("endTimes") == []
+    return False
+
+
 def _short_error(text: str) -> str:
     text = (text or "未知原因").strip()
     return text[:60]
@@ -316,7 +331,8 @@ class APIClient:
                     browser_payload = self._browser_request(method, path, params=params, data=data)
                     if browser_payload.get("status") != "error":
                         return browser_payload
-                logger.warning(
+                log_result = logger.debug if resp.ok and _is_empty_seat_time_failure(path, payload) else logger.warning
+                log_result(
                     "⚠️ [API] %s %s -> HTTP %d %dms | %s",
                     method, path, resp.status_code, elapsed_ms, summary,
                 )
