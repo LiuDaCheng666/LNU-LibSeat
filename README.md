@@ -40,6 +40,22 @@
 
 ---
 
+## 不懂代码也能用：三步快速上手
+
+**不懂 Python 能不能用？完全能用。** 你不需要安装 Python，也不需要打开源码，只下载打包好的 exe 即可。
+
+1. 在 GitHub 页面右侧找到 **Releases**，点击进入发布页面。当前最新版本是 **v2.5.2**。
+2. 下载 `LNU-LibSeat-v2.5.2.zip`，或直接点击这里下载：[LNU-LibSeat-v2.5.2.zip](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/download/v2.5.2/LNU-LibSeat-v2.5.2.zip)。
+3. 解压后双击 `LNU-LibSeat.exe`。首次打开会弹出使用帮助，第一次建议先开启“测试模式”。
+
+常用入口：
+
+- 发布页：[GitHub Releases](https://github.com/LiuDaCheng666/LNU-LibSeat/releases)
+- 最新版本：[LNU-LibSeat v2.5.2](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/tag/v2.5.2)
+- 新手教程：[快速开始文档](docs/QUICKSTART.md)
+
+---
+
 ## 这是什么
 
 LNU-LibSeat 是一个面向辽宁大学图书馆座位预约系统的桌面工具。它不是单纯的定时抢座脚本，而是更偏“座位预约助手”：帮你在当前可预约时间段里扫描、比较、筛选，并预约更合适的座位。
