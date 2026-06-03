@@ -17,7 +17,7 @@
   },
   "dry_run": false,
   "receiver_email": "",
-  "mode": "multi",
+  "mode": "single",
   "pre_notify": 30,
   "auto_cancel": false,
   "priority_mode": "longest_first",

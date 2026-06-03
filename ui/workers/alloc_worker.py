@@ -49,6 +49,7 @@ class AllocWorker(QObject):
     log_line = Signal(str, str)
     finished = Signal()
     status_changed = Signal(str)
+    plan_status_changed = Signal(dict)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -127,6 +128,15 @@ class AllocWorker(QObject):
     def _slot_to_state(self, slot):
         if not slot:
             return None
+        if isinstance(slot, dict):
+            return {
+                "seat_num": str(slot.get("seat_num", "")),
+                "room_name": str(slot.get("room_name", "")),
+                "start": str(slot.get("start", slot.get("start_time", ""))),
+                "end": str(slot.get("end", slot.get("end_time", ""))),
+                "booking_start": str(slot.get("booking_start") or slot.get("start") or slot.get("start_time", "")),
+                "booking_end": str(slot.get("booking_end") or slot.get("end") or slot.get("end_time", "")),
+            }
         return {
             "seat_num": str(getattr(slot, "seat_num", "")),
             "room_name": str(getattr(slot, "room_name", "")),
@@ -166,27 +176,32 @@ class AllocWorker(QObject):
         reason="milestone",
         extra=None,
     ):
+        cfg = self._config or {}
         state = {
             "active": bool(active),
             "mode": "single",
             "phase": phase,
             "reason": reason,
-            "account": str(((self._config or {}).get("accounts") or [[""]])[0][0]),
+            "account": str((cfg.get("accounts") or [[""]])[0][0]),
             "config": self._runtime_config_snapshot(),
             "current_booking": self._booking_to_state(current),
             "pending_next_slot": self._slot_to_state(pending_next_slot),
             "notify_at": notify_at or "",
+            "target_range": f"{cfg.get('day_start', '')}-{cfg.get('day_end', '')}",
+            "pre_notify": cfg.get("pre_notify", 30),
         }
         if extra:
             state.update(extra)
         with self._single_runtime_lock:
             self._single_runtime_state = state
         save_single_runtime_state(state)
+        self.plan_status_changed.emit(dict(state))
 
     def _clear_single_runtime_state(self):
         with self._single_runtime_lock:
             self._single_runtime_state = None
         clear_single_runtime_state()
+        self.plan_status_changed.emit({})
 
     def _preferred_with_resume_slot(self, preferred_seats, campus, slot_dict):
         if not slot_dict:
@@ -343,6 +358,7 @@ class AllocWorker(QObject):
 
         try:
             self.status_changed.emit("running")
+            self.plan_status_changed.emit({})
             self._emit("LibSeat Allocator 启动...\n", "#00c8ff")
 
             cfg = self._config
@@ -422,12 +438,14 @@ class AllocWorker(QObject):
         from logic.navigator import enter_room
         from logic.api_planner import (
             build_api_plan,
-            build_multi_account_schedule,
-            format_multi_schedule_summary,
+            build_multi_account_schedule_options,
+            build_single_followup_preview,
+            format_multi_schedule_options_summary,
             format_plan_summary,
             save_plan_report,
         )
         from core.api_client import APIClient, extract_token
+        from core.desktop_notify import notify_option_choice
         from core.driver import get_driver
 
         if not accounts:
@@ -487,7 +505,7 @@ class AllocWorker(QObject):
 
             self._emit("[API测试 4/4] 生成测试报告...\n", "#7c5cfc")
             if cfg.get("mode") == "multi":
-                schedule_data = build_multi_account_schedule(
+                schedule_options = build_multi_account_schedule_options(
                     plan,
                     max_segments=min(len(accounts), 3),
                     campus=campus,
@@ -497,14 +515,85 @@ class AllocWorker(QObject):
                     cross_room=cfg.get("cross_room", True),
                     cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
                 )
-                plan["multi_account_schedule"] = schedule_data
+                plan["multi_account_schedule_options"] = schedule_options
+                plan["multi_account_schedule"] = schedule_options[0]["schedule"] if schedule_options else {}
                 report_path = save_plan_report(plan, prefix="api_multi_dry_run_plan")
-                summary = format_multi_schedule_summary(plan, schedule_data, dry_run=True)
-                summary_success = schedule_data.get("success")
+                summary = format_multi_schedule_options_summary(plan, schedule_options, dry_run=True)
+                summary_success = bool(schedule_options)
+                if schedule_options:
+                    title, message, choices = self._build_multi_booking_options_notification(plan, schedule_options, accounts)
+                    selected_id = notify_option_choice(
+                        title + "（测试模式）",
+                        message + "\n\n测试模式只记录选择，不会预约。",
+                        choices=choices,
+                        default_choice="abort",
+                        timeout_seconds=cfg.get("notify_timeout", 300),
+                    )
+                    selected_option = next((item for item in schedule_options if item.get("option_id") == selected_id), None)
+                    if selected_option:
+                        self._emit(f"测试模式已选择方案: {selected_option.get('title', '')}（未执行预约）\n", "#00e676")
+                    else:
+                        self._emit("测试模式未选择方案，未执行预约。\n", "#ffab40")
             else:
                 report_path = save_plan_report(plan)
                 summary = format_plan_summary(plan)
                 summary_success = plan.get("success")
+                final = (plan.get("selection") or {}).get("final_recommendation")
+                if plan.get("success") and final:
+                    title, message, choices = self._build_api_booking_options_notification(plan)
+                    selected_id = notify_option_choice(
+                        title + "（测试模式）",
+                        message + "\n\n测试模式只记录选择，不会预约；右侧会显示续约预览。",
+                        choices=choices,
+                        default_choice="abort",
+                        timeout_seconds=cfg.get("notify_timeout", 300),
+                    )
+                    selected_final = self._option_by_id(plan, selected_id) if selected_id != "abort" else None
+                    if selected_final:
+                        first_slot = self._api_item_to_slot(selected_final)
+                        upcoming_preview = build_single_followup_preview(
+                            plan,
+                            first_slot.end,
+                            cfg.get("day_end", "21:00"),
+                            campus=campus,
+                            current_room=first_slot.room_name,
+                            preferred_seats=cfg.get("preferred_seats", {}),
+                            priority_mode=cfg.get("priority_mode", "longest_first"),
+                            cross_room=cfg.get("cross_room", True),
+                            cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                            max_segments=2,
+                        )
+                        notify_at = self._notify_at_for_booking(
+                            type("BookingPreview", (), {"end_time": first_slot.end})(),
+                            cfg.get("pre_notify", 30),
+                        )
+                        self.plan_status_changed.emit({
+                            "active": True,
+                            "mode": "single",
+                            "phase": "dry_run_preview",
+                            "reason": "dry_run_preview",
+                            "account": str(account),
+                            "current_booking": {
+                                "seat_num": first_slot.seat_num,
+                                "room_name": first_slot.room_name,
+                                "start_time": first_slot.start,
+                                "end_time": first_slot.end,
+                                "status": "测试预览",
+                            },
+                            "pending_next_slot": None,
+                            "upcoming_slots": [self._slot_to_state(slot) for slot in upcoming_preview],
+                            "notify_at": notify_at,
+                            "target_range": f"{cfg.get('day_start', '')}-{cfg.get('day_end', '')}",
+                            "pre_notify": cfg.get("pre_notify", 30),
+                            "dry_run": True,
+                        })
+                        self._emit(
+                            f"测试模式已选择候选: 座位{first_slot.seat_num} [{first_slot.room_name}] "
+                            f"{first_slot.start}-{first_slot.end}（未执行预约）\n",
+                            "#00e676",
+                        )
+                    else:
+                        self._emit("测试模式未选择候选，未执行预约。\n", "#ffab40")
             color = "#00e676" if summary_success else "#ff5252"
             self._emit("\n" + summary + "\n", color)
             self._emit(f"报告已保存: {report_path}\n", "#00c8ff")
@@ -526,12 +615,12 @@ class AllocWorker(QObject):
         from logic.booker import SeatBooker
         from logic.api_planner import (
             build_api_plan,
-            build_multi_account_schedule,
-            format_multi_schedule_summary,
+            build_multi_account_schedule_options,
+            format_multi_schedule_options_summary,
             save_plan_report,
         )
         from core.api_client import APIClient, extract_token
-        from core.desktop_notify import notify_and_confirm
+        from core.desktop_notify import notify_option_choice
         from core.driver import get_driver
         from core.notifications import send_email
 
@@ -603,7 +692,7 @@ class AllocWorker(QObject):
             stop_event=self._stop_event,
             progress=progress,
         )
-        schedule_data = build_multi_account_schedule(
+        schedule_options = build_multi_account_schedule_options(
             plan,
             max_segments=max_acc,
             campus=campus,
@@ -613,20 +702,40 @@ class AllocWorker(QObject):
             cross_room=cross_room,
             cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
         )
-        plan["multi_account_schedule"] = schedule_data
+        plan["multi_account_schedule_options"] = schedule_options
+        plan["multi_account_schedule"] = schedule_options[0]["schedule"] if schedule_options else {}
         report_path = save_plan_report(plan, prefix="api_multi_booking_plan")
-        self._emit("\n" + format_multi_schedule_summary(plan, schedule_data, dry_run=False) + "\n", "#00e676" if schedule_data.get("success") else "#ff5252")
+        self._emit("\n" + format_multi_schedule_options_summary(plan, schedule_options, dry_run=False) + "\n", "#00e676" if schedule_options else "#ff5252")
         self._emit(f"API多账号方案报告: {report_path}\n", "#00c8ff")
 
-        if not schedule_data.get("success"):
+        if not schedule_options:
             self._emit("[FAIL] API 未生成可预约分段方案，本次不回退逐座位点击扫描。\n", "#ff5252")
             driver.quit()
             return
 
-        if not notify_and_confirm(*self._build_multi_booking_notification(plan, schedule_data, accounts)):
+        title, message, choices = self._build_multi_booking_options_notification(plan, schedule_options, accounts)
+        selected_id = notify_option_choice(
+            title,
+            message,
+            choices=choices,
+            default_choice="abort",
+            timeout_seconds=cfg.get("notify_timeout", 300),
+        )
+        if selected_id == "abort":
             self._emit("  用户取消多账号预约，本次任务结束\n", "#ffab40")
             driver.quit()
             return
+
+        selected_option = next((item for item in schedule_options if item.get("option_id") == selected_id), None)
+        if not selected_option:
+            self._emit("  用户选择的方案无效，本次任务结束\n", "#ffab40")
+            driver.quit()
+            return
+
+        schedule_data = selected_option.get("schedule", {}) or {}
+        plan["selected_multi_account_schedule_option"] = selected_option
+        plan["multi_account_schedule"] = schedule_data
+        self._emit(f"  已选择: {selected_option.get('title', '方案')}\n", "#00e676")
 
         schedule_segments = [self._api_item_to_slot(seg) for seg in schedule_data.get("segments", [])]
 
@@ -712,6 +821,7 @@ class AllocWorker(QObject):
         from logic.booking_manager import BookingManager, BookingInfo
         from logic.api_planner import (
             build_api_plan,
+            build_single_followup_preview,
             format_plan_summary,
             save_plan_report,
         )
@@ -720,8 +830,8 @@ class AllocWorker(QObject):
         from core.notifications import build_success_email, send_email
         from core.desktop_notify import (
             notify_and_confirm,
+            notify_option_choice,
             notify_resume_choice,
-            build_seat_change_notification,
             build_no_seat_notification,
         )
 
@@ -894,14 +1004,22 @@ class AllocWorker(QObject):
                 driver.quit()
                 return
 
-            first_slot = self._api_item_to_slot(final)
-            self._emit(f"  第一阶段: 座位{first_slot.seat_num} [{first_slot.room_name}] {first_slot.start}-{first_slot.end}\n", "#00e676")
-
-            title, msg = self._build_api_booking_notification(first_plan)
-            if not notify_and_confirm(title, msg, timeout_seconds=cfg.get("notify_timeout", 300)):
+            title, msg, choices = self._build_api_booking_options_notification(first_plan)
+            selected_id = notify_option_choice(
+                title,
+                msg,
+                choices=choices,
+                default_choice="abort",
+                timeout_seconds=cfg.get("notify_timeout", 300),
+            )
+            if selected_id == "abort":
                 self._emit("  用户取消预约，本次任务结束\n", "#ffab40")
                 driver.quit()
                 return
+
+            selected_final = self._option_by_id(first_plan, selected_id) or final
+            first_slot = self._api_item_to_slot(selected_final)
+            self._emit(f"  第一阶段: 座位{first_slot.seat_num} [{first_slot.room_name}] {first_slot.start}-{first_slot.end}\n", "#00e676")
 
             if first_slot.room_name != room:
                 self._emit(f"  切换到推荐房间: {first_slot.room_name}\n", "#7c5cfc")
@@ -931,11 +1049,27 @@ class AllocWorker(QObject):
             except Exception:
                 pass
 
+            upcoming_preview = build_single_followup_preview(
+                first_plan,
+                current.end_time,
+                day_end,
+                campus=campus,
+                current_room=current.room_name,
+                preferred_seats=cfg.get("preferred_seats", {}),
+                priority_mode=cfg.get("priority_mode", "longest_first"),
+                cross_room=cross_room,
+                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                max_segments=2,
+            )
+        else:
+            upcoming_preview = []
+
         self._set_single_runtime_state(
             "waiting_next_scan",
             current=current,
             notify_at=self._notify_at_for_booking(current, pre_notify),
             reason="single_loop_started",
+            extra={"upcoming_slots": [self._slot_to_state(slot) for slot in upcoming_preview]},
         )
 
         # [3] 持续循环
@@ -959,6 +1093,7 @@ class AllocWorker(QObject):
                 current=current,
                 notify_at=notify_at_text,
                 reason="waiting_next_scan",
+                extra={"upcoming_slots": [self._slot_to_state(slot) for slot in upcoming_preview]},
             )
             now = _bj_now()
             now_mins = now.hour * 60 + now.minute
@@ -1039,14 +1174,18 @@ class AllocWorker(QObject):
                 self._clear_single_runtime_state()
                 break
 
-            next_slot = self._api_item_to_slot(next_final)
-
-            same_room = next_slot.room_name == current.room_name
-            self._emit(f"  推荐: 座位{next_slot.seat_num} [{next_slot.room_name}] {next_slot.start}-{next_slot.end} ({'同房间' if same_room else '跨房间'})\n", "#00e676")
+            recommended_slot = self._api_item_to_slot(next_final)
+            recommended_same_room = recommended_slot.room_name == current.room_name
+            self._emit(
+                f"  推荐: 座位{recommended_slot.seat_num} [{recommended_slot.room_name}] "
+                f"{recommended_slot.start}-{recommended_slot.end} "
+                f"({'同房间' if recommended_same_room else '跨房间'})\n",
+                "#00e676",
+            )
             self._set_single_runtime_state(
                 "pending_change_confirmation",
                 current=current,
-                pending_next_slot=next_slot,
+                pending_next_slot=recommended_slot,
                 notify_at=notify_at_text,
                 reason="next_slot_found",
                 extra={"last_report_path": report_path},
@@ -1055,14 +1194,20 @@ class AllocWorker(QObject):
             # 通知用户
             if auto_cancel:
                 confirmed = True
+                next_slot = recommended_slot
                 self._emit("  自动模式: 无需用户确认\n", "#8888aa")
             else:
-                title, msg = build_seat_change_notification(
-                    current.seat_num, current.room_name, current.end_time,
-                    next_slot.seat_num, next_slot.room_name,
-                    next_slot.start, next_slot.end, same_room,
+                title, msg, choices = self._build_next_seat_options_notification(current, next_plan)
+                selected_id = notify_option_choice(
+                    title,
+                    msg,
+                    choices=choices,
+                    default_choice="abort",
+                    timeout_seconds=cfg.get("notify_timeout", 300),
                 )
-                confirmed = notify_and_confirm(title, msg)
+                confirmed = selected_id != "abort"
+                selected_next = self._option_by_id(next_plan, selected_id) if confirmed else None
+                next_slot = self._api_item_to_slot(selected_next or next_final)
 
             if not confirmed:
                 self._emit("  用户拒绝换座，结束\n", "#ffab40")
@@ -1075,6 +1220,21 @@ class AllocWorker(QObject):
                 )
                 self._clear_single_runtime_state()
                 break
+
+            same_room = next_slot.room_name == current.room_name
+            self._emit(
+                f"  已选择下一段: 座位{next_slot.seat_num} [{next_slot.room_name}] "
+                f"{next_slot.start}-{next_slot.end} ({'同房间' if same_room else '跨房间'})\n",
+                "#00e676",
+            )
+            self._set_single_runtime_state(
+                "pending_change_confirmation",
+                current=current,
+                pending_next_slot=next_slot,
+                notify_at=notify_at_text,
+                reason="next_slot_selected",
+                extra={"last_report_path": report_path},
+            )
 
             # 执行换座
             self._emit("  执行换座...\n", "#7c5cfc")
@@ -1127,11 +1287,24 @@ class AllocWorker(QObject):
                 status="有效",
             )
             self._emit(f"  [OK] 换座成功! 座位{current.seat_num} {current.start_time}-{current.end_time}\n\n", "#00e676")
+            upcoming_preview = build_single_followup_preview(
+                next_plan,
+                current.end_time,
+                day_end,
+                campus=campus,
+                current_room=current.room_name,
+                preferred_seats=cfg.get("preferred_seats", {}),
+                priority_mode=cfg.get("priority_mode", "longest_first"),
+                cross_room=cross_room,
+                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                max_segments=2,
+            )
             self._set_single_runtime_state(
                 "waiting_next_scan",
                 current=current,
                 notify_at=self._notify_at_for_booking(current, pre_notify),
                 reason="change_success",
+                extra={"upcoming_slots": [self._slot_to_state(slot) for slot in upcoming_preview]},
             )
 
             # 发送邮件
@@ -1186,6 +1359,119 @@ class AllocWorker(QObject):
             "点击「否」: 不预约并结束本次任务"
         )
         return title, message
+
+    def _plan_selectable_options(self, plan: dict) -> list:
+        selection = plan.get("selection", {}) or {}
+        options = list(selection.get("selectable_options") or [])
+        final = selection.get("final_recommendation")
+        if not options and final:
+            options = [dict(final, option_id="opt1", title="最终推荐", reason=selection.get("decision_note", ""), is_recommended=True)]
+
+        normalized = []
+        for idx, option in enumerate(options, start=1):
+            item = dict(option)
+            item.setdefault("option_id", f"opt{idx}")
+            item.setdefault("title", f"候选{idx}")
+            normalized.append(item)
+        return normalized
+
+    def _option_by_id(self, plan: dict, option_id: str):
+        for option in self._plan_selectable_options(plan):
+            if option.get("option_id") == option_id:
+                return option
+        return None
+
+    def _format_option_line(self, idx: int, item: dict) -> str:
+        marker = " [推荐]" if item.get("is_recommended") else ""
+        return (
+            f"{idx}. {item.get('title', '候选')}{marker}: "
+            f"{item.get('room_name')} / 座位{item.get('seat_num')} / "
+            f"{item.get('start')}-{item.get('end')} / "
+            f"{item.get('duration_minutes', 0)}分钟"
+        )
+
+    def _build_api_booking_options_notification(self, plan: dict) -> tuple:
+        """构建首次预约候选选择弹窗。"""
+        cfg = plan.get("config", {}) or {}
+        selection = plan.get("selection", {}) or {}
+        options = self._plan_selectable_options(plan)
+        title = "座位预约选择 - API 已生成候选方案"
+        lines = [
+            f"目标: {cfg.get('campus', '')} / {cfg.get('target_room', '')}",
+            f"有效时段: {cfg.get('effective_range', '')}",
+            f"决策说明: {selection.get('decision_note', '')}",
+            "",
+            "请选择要预约的座位:",
+        ]
+        for idx, option in enumerate(options, start=1):
+            lines.append(self._format_option_line(idx, option))
+            reason = option.get("reason")
+            if reason:
+                lines.append(f"   说明: {reason}")
+        lines.extend(["", "点击对应按钮预约该候选；点击取消则结束本次任务。"])
+        choices = [(option.get("option_id"), f"选{idx}") for idx, option in enumerate(options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
+
+    def _build_next_seat_options_notification(self, current, plan: dict) -> tuple:
+        """构建单账号下一段候选选择弹窗。"""
+        cfg = plan.get("config", {}) or {}
+        options = self._plan_selectable_options(plan)
+        title = "换座提醒 - 请选择下一阶段座位"
+        lines = [
+            f"当前预约: {current.room_name} / 座位{current.seat_num} / {current.start_time}-{current.end_time}",
+            f"下一段扫描范围: {cfg.get('effective_range', '')}",
+            "",
+            "请选择下一阶段座位:",
+        ]
+        for idx, option in enumerate(options, start=1):
+            lines.append(self._format_option_line(idx, option))
+            reason = option.get("reason")
+            if reason:
+                lines.append(f"   说明: {reason}")
+        lines.extend([
+            "",
+            "点击对应按钮: 取消当前预约并预约该候选",
+            "点击取消: 保持当前座位，不换座",
+        ])
+        choices = [(option.get("option_id"), f"选{idx}") for idx, option in enumerate(options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
+
+    def _build_multi_booking_options_notification(self, plan: dict, schedule_options: list, accounts: list) -> tuple:
+        """构建多账号多套方案选择弹窗。"""
+        cfg = plan.get("config", {}) or {}
+        title = "多账号预约选择 - API 已生成多套方案"
+        lines = [
+            f"目标: {cfg.get('campus', '')} / {cfg.get('target_room', '')}",
+            f"有效时段: {cfg.get('effective_range', '')}",
+            f"可用账号数: {len(accounts)}",
+            "",
+            "请选择一套完整方案:",
+        ]
+
+        for idx, option in enumerate(schedule_options, start=1):
+            schedule = option.get("schedule", {}) or {}
+            lines.append(f"方案{idx}: {option.get('title', '')}")
+            lines.append(f"  {option.get('description', '')}")
+            note = option.get("note")
+            if note:
+                lines.append(f"  说明: {note}")
+            for seg_idx, seg in enumerate(schedule.get("segments", []) or [], start=1):
+                lines.append(
+                    f"  账号{seg_idx}: {seg.get('room_name')} / 座位{seg.get('seat_num')} / "
+                    f"{seg.get('start')}-{seg.get('end')} / {seg.get('duration_minutes')}分钟"
+                )
+            gaps = schedule.get("gaps", []) or []
+            if gaps:
+                gap_text = "、".join(f"{gap.get('start')}-{gap.get('end')}" for gap in gaps)
+                lines.append(f"  未覆盖: {gap_text}")
+            lines.append("")
+
+        lines.append("点击对应按钮后，程序会按所选方案依次登录账号并预约。")
+        choices = [(option.get("option_id"), f"方案{idx}") for idx, option in enumerate(schedule_options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
 
     def _build_multi_booking_notification(self, plan: dict, schedule: dict, accounts: list) -> tuple:
         """构建多账号 API 分段预约确认弹窗。"""

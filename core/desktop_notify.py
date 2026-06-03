@@ -257,6 +257,38 @@ def notify_resume_choice(
     return choice
 
 
+def notify_option_choice(
+    title: str,
+    message: str,
+    choices: list,
+    default_choice: str = "abort",
+    timeout_seconds: int = 300,
+) -> str:
+    """
+    Ask the user to choose one option from a prepared list.
+
+    choices: list of (value, label) tuples. The caller should include a cancel
+    option when cancellation is allowed.
+    """
+    logger.info("🔔 ====== 方案选择 ======")
+    logger.info("📋 %s", title)
+    for line in message.split("\n"):
+        if line.strip():
+            logger.info("   %s", line.strip())
+    logger.info("🔔 ====================")
+
+    _show_win32_toast(title, message)
+    choice = _show_tkinter_choice(
+        title,
+        message,
+        choices=choices,
+        default_choice=default_choice,
+        timeout_seconds=timeout_seconds,
+    )
+    logger.info("方案选择: %s", choice)
+    return choice
+
+
 def notify_info(title: str, message: str) -> None:
     """
     仅通知，不需要用户确认。

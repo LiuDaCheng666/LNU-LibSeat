@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parent
 APP_NAME = "LNU-LibSeat"
-APP_VERSION = "v2.0.0"
+APP_VERSION = "v2.5.2"
 APP_ICON = "OIP-C.ico"
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 DIST_ROOT = ROOT / "dist"

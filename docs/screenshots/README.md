@@ -19,7 +19,8 @@ README 已使用的截图：
 | 文件名 | 内容 |
 | --- | --- |
 | `resume-dialog.png` | 重启恢复选择弹窗。 |
-| `single-change-confirm.png` | 单账号找到下一段后的换座确认弹窗。 |
-| `multi-plan-confirm.png` | 多账号分段方案确认弹窗。 |
+| `single-plan-status.png` | 单账号续约计划和倒计时状态区。 |
+| `single-seat-options.png` | 单账号候选座位选择弹窗。 |
+| `multi-plan-options.png` | 多账号多套方案选择弹窗。 |
 
 如果你手动上传截图，建议使用上述命名，后续可以把图片链接补进 `QUICKSTART.md` 和 `USER_GUIDE.md`。

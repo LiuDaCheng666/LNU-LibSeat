@@ -483,6 +483,61 @@ def choose_room_interval(
     return candidates[0], "最长时段优先"
 
 
+def _option_key(item: Optional[Dict[str, Any]]) -> Tuple[str, str, str, str]:
+    if not item:
+        return ("", "", "", "")
+    return (
+        str(item.get("room_name", "")),
+        str(item.get("seat_num", "")),
+        str(item.get("start", "")),
+        str(item.get("end", "")),
+    )
+
+
+def _make_selectable_option(
+    option_id: str,
+    title: str,
+    interval: Optional[SeatInterval],
+    reason: str = "",
+    recommended_key: Tuple[str, str, str, str] = ("", "", "", ""),
+) -> Optional[Dict[str, Any]]:
+    if not interval:
+        return None
+    item = interval.to_dict()
+    item.update({
+        "option_id": option_id,
+        "title": title,
+        "reason": reason,
+        "is_recommended": _option_key(item) == recommended_key,
+    })
+    return item
+
+
+def _dedupe_options(options: Iterable[Optional[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    deduped: List[Dict[str, Any]] = []
+    seen = set()
+    for option in options:
+        if not option:
+            continue
+        key = _option_key(option)
+        if key in seen:
+            continue
+        seen.add(key)
+        option = dict(option)
+        option["option_id"] = f"opt{len(deduped) + 1}"
+        deduped.append(option)
+    return deduped
+
+
+def _global_best_interval(scans: Iterable[RoomScan]) -> Optional[SeatInterval]:
+    candidates: List[SeatInterval] = []
+    for scan in scans:
+        candidates.extend(scan.best_per_seat())
+    if not candidates:
+        return None
+    return sorted(candidates, key=_interval_rank)[0]
+
+
 def build_api_plan(
     client,
     campus: str,
@@ -592,6 +647,7 @@ def build_api_plan(
 
     cross_choice = None
     cross_reason = ""
+    cross_room_options: List[Tuple[SeatInterval, str]] = []
     if cross_room:
         cross_candidates = []
         for scan in scans:
@@ -601,6 +657,7 @@ def build_api_plan(
             candidate, reason = choose_room_interval(scan, room_prefs, priority_mode)
             if candidate:
                 cross_candidates.append((candidate, reason))
+                cross_room_options.append((candidate, reason))
         if cross_candidates:
             cross_candidates.sort(key=lambda item: _interval_rank(item[0]))
             cross_choice, cross_reason = cross_candidates[0]
@@ -623,6 +680,41 @@ def build_api_plan(
                 decision_note = "跨房间候选未明显优于当前房间，使用当前房间推荐"
         else:
             decision_note = "跨房间未找到可用候选，使用当前房间推荐"
+
+    recommended_key = _option_key(final.to_dict() if final else None)
+    selectable_options = _dedupe_options([
+        _make_selectable_option(
+            "current_rule",
+            "当前房间规则选择",
+            current_choice,
+            current_reason,
+            recommended_key,
+        ),
+        _make_selectable_option(
+            "current_best",
+            "当前房间最长时段",
+            current_room_best,
+            "当前房间内持续时间最长",
+            recommended_key,
+        ),
+        _make_selectable_option(
+            "global_best",
+            "全局最佳时长座位",
+            _global_best_interval(scans),
+            "所有已扫描房间中持续时间最长",
+            recommended_key,
+        ),
+        *[
+            _make_selectable_option(
+                f"room_{index}",
+                f"{candidate.room_name} 最佳座位",
+                candidate,
+                reason,
+                recommended_key,
+            )
+            for index, (candidate, reason) in enumerate(cross_room_options, start=1)
+        ],
+    ])
 
     plan = {
         "started_at_bj": started.isoformat(),
@@ -648,6 +740,7 @@ def build_api_plan(
             "cross_room_best": cross_choice.to_dict() if cross_choice else None,
             "cross_room_reason": cross_reason,
             "final_recommendation": final.to_dict() if final else None,
+            "selectable_options": selectable_options,
             "needs_confirmation": needs_confirmation,
             "decision_note": decision_note,
         },
@@ -773,6 +866,7 @@ def build_multi_account_schedule(
     cross_room: bool = True,
     cross_room_min_gain_minutes: int = 0,
     tolerance_minutes: int = 30,
+    excluded_keys: Optional[Iterable[Tuple[str, str, str, str]]] = None,
 ) -> Dict[str, Any]:
     """Build a multi-account segmented schedule from a full API scan plan."""
     config = plan.get("config", {}) or {}
@@ -783,11 +877,23 @@ def build_multi_account_schedule(
     day_start, day_end = effective_range.split("-", 1)
     day_start_mins = time_to_minutes(day_start)
     day_end_mins = time_to_minutes(day_end)
+    excluded = {
+        (str(room), str(seat), str(start), str(end))
+        for room, seat, start, end in (excluded_keys or [])
+    }
     intervals: List[Dict[str, Any]] = []
     for room in plan.get("rooms_scanned", []) or []:
         for item in room.get("intervals", []) or []:
             copied = _candidate_copy(item, day_end_mins)
             if copied:
+                key = (
+                    str(copied.get("room_name", "")),
+                    str(copied.get("seat_num", "")),
+                    str(copied.get("start", "")),
+                    str(copied.get("end", "")),
+                )
+                if key in excluded:
+                    continue
                 intervals.append(copied)
 
     if not intervals:
@@ -865,6 +971,200 @@ def build_multi_account_schedule(
     }
 
 
+def _schedule_signature(schedule: Dict[str, Any]) -> Tuple[Tuple[str, str, str, str], ...]:
+    return tuple(
+        (
+            str(seg.get("room_name", "")),
+            str(seg.get("seat_num", "")),
+            str(seg.get("start", "")),
+            str(seg.get("end", "")),
+        )
+        for seg in schedule.get("segments", []) or []
+    )
+
+
+def _schedule_description(schedule: Dict[str, Any]) -> str:
+    segments = schedule.get("segments", []) or []
+    rooms = []
+    for seg in segments:
+        room = str(seg.get("room_name", ""))
+        if room and room not in rooms:
+            rooms.append(room)
+    return (
+        f"覆盖 {schedule.get('total_covered_minutes', 0)}/"
+        f"{schedule.get('desired_minutes', 0)} 分钟，"
+        f"使用 {len(segments)} 个账号，"
+        f"{' / '.join(rooms) if rooms else '无可用房间'}"
+    )
+
+
+def build_multi_account_schedule_options(
+    plan: Dict[str, Any],
+    max_segments: int,
+    campus: str,
+    target_room: str,
+    preferred_seats: Optional[Dict[str, List[str]]] = None,
+    priority_mode: str = "longest_first",
+    cross_room: bool = True,
+    cross_room_min_gain_minutes: int = 0,
+    max_options: int = 3,
+) -> List[Dict[str, Any]]:
+    """Build several complete multi-account schedules for the user to choose from."""
+    candidates: List[Tuple[str, str, Dict[str, Any]]] = []
+
+    one_account = build_multi_account_schedule(
+        plan,
+        max_segments=1,
+        campus=campus,
+        target_room=target_room,
+        preferred_seats=preferred_seats,
+        priority_mode=priority_mode,
+        cross_room=cross_room,
+        cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+    )
+    candidates.append(("少账号优先方案", "优先尝试只使用账号1；若一个座位能覆盖目标时长，这就是完整方案。", one_account))
+
+    one_account_signature = set(_schedule_signature(one_account))
+    one_account_full = (
+        len(one_account.get("segments", []) or []) == 1
+        and int(one_account.get("total_covered_minutes", 0)) >= int(one_account.get("desired_minutes", 0))
+    )
+    if one_account_full and one_account_signature:
+        current_room_segmented = build_multi_account_schedule(
+            plan,
+            max_segments=max_segments,
+            campus=campus,
+            target_room=target_room,
+            preferred_seats=preferred_seats,
+            priority_mode=priority_mode,
+            cross_room=False,
+            cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+            excluded_keys=one_account_signature,
+        )
+        candidates.append(("当前房间分段备选", "避开少账号方案中的整段座位，尝试生成同房间多段方案。", current_room_segmented))
+
+    current_room = build_multi_account_schedule(
+        plan,
+        max_segments=max_segments,
+        campus=campus,
+        target_room=target_room,
+        preferred_seats=preferred_seats,
+        priority_mode=priority_mode,
+        cross_room=False,
+        cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+    )
+    candidates.append(("当前房间优先方案", "只使用当前目标房间的座位，宁可覆盖时间短一些。", current_room))
+
+    best_coverage = build_multi_account_schedule(
+        plan,
+        max_segments=max_segments,
+        campus=campus,
+        target_room=target_room,
+        preferred_seats=preferred_seats,
+        priority_mode="longest_first",
+        cross_room=cross_room,
+        cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+    )
+    candidates.append(("最长覆盖方案", "允许使用勾选的跨房间范围，优先覆盖更长时间。", best_coverage))
+
+    room_names = [
+        str(room.get("room", ""))
+        for room in plan.get("rooms_scanned", []) or []
+        if room.get("room")
+    ]
+    for room_name in room_names:
+        if room_name == target_room:
+            continue
+        room_only = build_multi_account_schedule(
+            plan,
+            max_segments=max_segments,
+            campus=campus,
+            target_room=room_name,
+            preferred_seats=preferred_seats,
+            priority_mode=priority_mode,
+            cross_room=False,
+            cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+        )
+        candidates.append((f"{room_name} 房间方案", "只使用该勾选房间的最佳分段。", room_only))
+
+    options: List[Dict[str, Any]] = []
+    seen = set()
+    for title, note, schedule in candidates:
+        if not schedule.get("success") or not schedule.get("segments"):
+            continue
+        signature = _schedule_signature(schedule)
+        if not signature or signature in seen:
+            continue
+        seen.add(signature)
+        options.append({
+            "option_id": f"schedule{len(options) + 1}",
+            "title": title,
+            "description": _schedule_description(schedule),
+            "note": note,
+            "schedule": schedule,
+        })
+        if len(options) >= max_options:
+            break
+    return options
+
+
+def build_single_followup_preview(
+    plan: Dict[str, Any],
+    current_end: str,
+    day_end: str,
+    campus: str,
+    current_room: str,
+    preferred_seats: Optional[Dict[str, List[str]]] = None,
+    priority_mode: str = "longest_first",
+    cross_room: bool = True,
+    cross_room_min_gain_minutes: int = 0,
+    max_segments: int = 2,
+    tolerance_minutes: int = 30,
+) -> List[Dict[str, Any]]:
+    """Preview likely next single-account segments from an existing scan report."""
+    try:
+        cursor = time_to_minutes(current_end)
+        day_end_mins = time_to_minutes(day_end)
+    except Exception:
+        return []
+
+    intervals: List[Dict[str, Any]] = []
+    for room in plan.get("rooms_scanned", []) or []:
+        for item in room.get("intervals", []) or []:
+            copied = _candidate_copy(item, day_end_mins)
+            if copied:
+                intervals.append(copied)
+    if not intervals:
+        return []
+
+    segments: List[Dict[str, Any]] = []
+    target_room = current_room
+    for _idx in range(max(0, max_segments)):
+        if cursor >= day_end_mins:
+            break
+        pool = _candidate_pool_for_cursor(intervals, cursor, day_end_mins, tolerance_minutes)
+        if not pool:
+            break
+        chosen, reason = _pick_from_pool(
+            pool,
+            campus=campus,
+            target_room=target_room,
+            preferred_seats=preferred_seats,
+            priority_mode=priority_mode,
+            cross_room=cross_room,
+            cross_room_min_gain_minutes=cross_room_min_gain_minutes,
+        )
+        if not chosen:
+            break
+        segment = dict(chosen)
+        segment["decision_note"] = reason
+        segment["source"] = "preview"
+        segments.append(segment)
+        cursor = time_to_minutes(str(segment.get("end", "00:00")))
+        target_room = str(segment.get("room_name", target_room))
+    return segments
+
+
 def format_multi_schedule_summary(plan: Dict[str, Any], schedule: Dict[str, Any], dry_run: bool = False) -> str:
     rooms = plan.get("rooms_scanned", []) or []
     total_intervals = sum(int(room.get("interval_count", 0)) for room in rooms)
@@ -882,6 +1182,33 @@ def format_multi_schedule_summary(plan: Dict[str, Any], schedule: Dict[str, Any]
         )
     for gap in schedule.get("gaps", []) or []:
         lines.append(f"缺口: {gap.get('start')}-{gap.get('end')}")
+    return "\n".join(lines)
+
+
+def format_multi_schedule_options_summary(
+    plan: Dict[str, Any],
+    schedule_options: List[Dict[str, Any]],
+    dry_run: bool = False,
+) -> str:
+    rooms = plan.get("rooms_scanned", []) or []
+    total_intervals = sum(int(room.get("interval_count", 0)) for room in rooms)
+    config = plan.get("config", {}) or {}
+    lines = [
+        "API多账号测试完成：只生成可选方案，未执行预约。" if dry_run else "API多账号分段方案生成完成：等待选择后才会执行预约。",
+        f"有效时段: {config.get('effective_range', '')}",
+        f"扫描房间: {len(rooms)} 个，空闲时间段: {total_intervals} 条",
+        f"可选方案: {len(schedule_options)} 套",
+    ]
+    for idx, option in enumerate(schedule_options, start=1):
+        schedule = option.get("schedule", {}) or {}
+        lines.append(f"方案{idx}: {option.get('title', '')} - {option.get('description', '')}")
+        for seg_idx, seg in enumerate(schedule.get("segments", []) or [], start=1):
+            lines.append(
+                f"  账号{seg_idx}: {seg.get('room_name')} / 座位{seg.get('seat_num')} / "
+                f"{seg.get('start')}-{seg.get('end')} / {seg.get('duration_minutes')}分钟"
+            )
+        for gap in schedule.get("gaps", []) or []:
+            lines.append(f"  缺口: {gap.get('start')}-{gap.get('end')}")
     return "\n".join(lines)
 
 
