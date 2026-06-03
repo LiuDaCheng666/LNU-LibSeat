@@ -9,23 +9,22 @@ def _get_smtp_creds():
     """延迟读取 SMTP 配置"""
     import config as _cfg
     user = getattr(_cfg, "SMTP_USER", "") or "lnu_library@163.com"
-    pwd = getattr(_cfg, "SMTP_PASS", "") or ""
+    pwd = getattr(_cfg, "SMTP_PASS", "") or "LWQWA366dd2g6msK"
     return user, pwd
 
 
 def build_success_email(account: str, room: str, seat: str, start_time: str, end_time: str):
     """Build the exact success-email subject/body used by the main booking flow."""
-    title = f"🎉✨ 预约成功: {account} @ {room} ✨🎉"
+    title = f"🎉 预约成功: {account} @ {room}"
     content = (
-        f"📚 学霸你好，你的座位已被成功锁定！📚\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"学霸你好，你的座位已被成功锁定！\n"
+        f"――――――――――――――――――――――――\n"
         f"👤 预约账号：{account}\n"
         f"🏫 目标场馆：{room}\n"
         f"💺 锁定座位：{seat}\n"
-        f"📅 预约时段：{start_time} - {end_time}\n"
-        f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
-        f"💡 温馨提示：请按时到馆签到入座 🚶‍♂️\n"
-        f"📖 祝您学习愉快，效率满满！💪🔥"
+        f"⏰ 预约时段：{start_time} - {end_time}\n"
+        f"――――――――――――――――――――――――\n"
+        f"💡 请按时到馆签到，祝您学习愉快！"
     )
     return title, content
 
@@ -33,7 +32,7 @@ def build_success_email(account: str, room: str, seat: str, start_time: str, end
 def send_email(title: str, content: str = "") -> bool:
     """
     发送邮件通知。
-    发件人：config.py 中用户设置的 SMTP_USER
+    发件人：项目内置邮箱（使用者无需配置）
     收件人：config.py 中用户设置的 RECEIVER_EMAIL
     """
     import config as _cfg
@@ -53,10 +52,8 @@ def send_email(title: str, content: str = "") -> bool:
         smtp_server = "smtp.163.com"
     elif "126.com" in _SMTP_USER:
         smtp_server = "smtp.126.com"
-    elif "qq.com" in _SMTP_USER:
-        smtp_server = "smtp.qq.com"
     else:
-        smtp_server = "smtp.163.com"
+        smtp_server = "smtp.qq.com"
 
     # 构建邮件内容
     message = MIMEText(content, 'plain', 'utf-8')
