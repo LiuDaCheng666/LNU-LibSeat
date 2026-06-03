@@ -195,6 +195,11 @@ class SeatBooker:
     def _save_screenshot(self, tag="step"):
         """保存截图到会话文件夹（若有）或 logs 目录"""
         try:
+            routine_tags = {"1_captcha_popup", "2_text_clicked", "3_confirm_clicked"}
+            save_debug = bool(getattr(__import__("config"), "SAVE_DEBUG_SCREENSHOTS", False))
+            if tag in routine_tags and not save_debug:
+                return None
+
             log_dir = getattr(self, "session_dir", None) or getattr(__import__("config"), "LOG_DIR", "logs")
             os.makedirs(log_dir, exist_ok=True)
             now = datetime.now(timezone(timedelta(hours=8)))
@@ -685,6 +690,9 @@ class SeatBooker:
 
         try:
             # ActionChains 用缓存的原 bg_el 点击（偏移量与之匹配）
+            # Clear stale captcha-error toast from previous attempts before judging this attempt.
+            self._dismiss_stale_messages()
+
             chain = ActionChains(self.driver)
             for ox, oy in offsets:
                 chain.move_to_element_with_offset(bg_el, ox, oy).click()
@@ -767,7 +775,7 @@ class SeatBooker:
             #    注意：不要在此处 _dismiss_stale_messages()，否则会清掉刚弹出的"验证码错误"
             ps = self.driver.page_source or ""
             captcha_wrong = any(kw in ps for kw in ("验证码错误", "请重试"))
-            if captcha_wrong:
+            if captcha_wrong and self.is_captcha_popup_present():
                 self.log.warning("⚡ [%s] 闪电检测到验证码错误，本地模型本次识别失败", self.account)
                 captcha_still_there = self.is_captcha_popup_present()
                 if captcha_still_there:
@@ -874,7 +882,8 @@ class SeatBooker:
     def _dismiss_stale_messages(self):
         """移除页面上所有残留的 .el-message 提示，避免 page_source 误扫到旧的'验证码错误'。"""
         self.driver.execute_script(
-            "document.querySelectorAll('.el-message').forEach(function(el) { el.remove(); });"
+            "document.querySelectorAll('.el-message, .el-notification, .el-alert')"
+            ".forEach(function(el) { el.remove(); });"
         )
 
     def _refresh_click_captcha(self, previous_key: str = "", wait_timeout: float = 1.0):

@@ -1228,6 +1228,8 @@ class AllocWorker(QObject):
     # ═══════════════════════════════════════════
     def _book_seat(self, booker, seat_num, start, end) -> bool:
         """预约单个座位，含验证码重试循环。返回 True/False。"""
+        booker.current_seat = str(seat_num)
+        booker.current_retry = 0
         if not booker.select_time_and_wait(seat_num, start, end):
             return False
         if not booker.fire_submit_trigger():
@@ -1237,6 +1239,7 @@ class AllocWorker(QObject):
         for retry in range(1, booker.get_captcha_max_retries() + 1):
             if self._stop_event.is_set():
                 return False
+            booker.current_retry = retry
             solve_data = booker.pre_solve_captcha()
             if solve_data.get("no_captcha"):
                 result = booker.check_result()
@@ -1250,12 +1253,21 @@ class AllocWorker(QObject):
                     return True
                 if result.get("status") in ("stop", "blacklist"):
                     return False
+                if result.get("status") == "retry_captcha":
+                    booker.last_captcha_auto_refreshed = True
+            if booker.last_captcha_auto_refreshed:
+                booker.last_captcha_auto_refreshed = False
+                continue
             if not booker.is_captcha_popup_present():
+                result = booker.check_result()
+                if result.get("status") == "success":
+                    return True
+                if result.get("status") == "retry_captcha":
+                    continue
+                if result.get("status") in ("stop", "blacklist"):
+                    return False
                 booker._close_captcha_modal()
                 booker.close_popup()
                 return False
-            if booker.last_captcha_auto_refreshed:
-                booker.last_captcha_auto_refreshed = False
-            else:
-                booker._refresh_click_captcha(previous_key=solve_data.get("captcha_key", ""), wait_timeout=1.0)
+            booker._refresh_click_captcha(previous_key=solve_data.get("captcha_key", ""), wait_timeout=1.0)
         return False

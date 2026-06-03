@@ -1,15 +1,15 @@
 {
   "accounts": [],
   "campus": "崇山校区图书馆",
-  "room": "二楼书库北",
+  "room": "三楼智慧研修空间",
   "day_start": "09:00",
   "day_end": "21:00",
   "cross_room": true,
   "cross_room_rooms": {
     "崇山校区图书馆": [
+      "二楼书库北",
       "二楼书库南",
       "二楼背诵长廊",
-      "三楼智慧研修空间",
       "三楼理科书库",
       "四楼北自习室",
       "四楼南自习室"
@@ -17,10 +17,10 @@
   },
   "dry_run": false,
   "receiver_email": "",
-  "mode": "single",
+  "mode": "multi",
   "pre_notify": 30,
   "auto_cancel": false,
-  "priority_mode": "prefer_first",
+  "priority_mode": "longest_first",
   "preferred_seats": {},
   "theme": "auto",
   "first_launch_help_shown": true
