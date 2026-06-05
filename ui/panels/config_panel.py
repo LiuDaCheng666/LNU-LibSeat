@@ -441,7 +441,7 @@ class ConfigPanel(QWidget):
         cross_header.addStretch(1)
         crc_l.addLayout(cross_header)
 
-        cross_note = QLabel("目标房间始终扫描；跨房间只扫描下方勾选的房间。")
+        cross_note = QLabel("目标房间始终扫描；跨房间只扫描下方勾选的房间。勾选越多，API 请求越多，等待时间越久。")
         cross_note.setFont(sans(8))
         cross_note.setStyleSheet(f"color: {C.TEXT_DIM}; background: transparent;")
         cross_note.setWordWrap(True)
@@ -629,8 +629,10 @@ class ConfigPanel(QWidget):
         mcard, mcl = _card()
         mcl.addLayout(_section("模  式  选  择"))
         self.toggle = ToggleGroup()
+        self.toggle.set_mode("single")
         self.toggle.mode_changed.connect(self._on_mode_changed)
         mcl.addWidget(self.toggle)
+        self._on_mode_changed("single")
         bl.addWidget(mcard)
 
         # ══════ 操作按钮 ══════
@@ -685,10 +687,8 @@ class ConfigPanel(QWidget):
         return CROSS_ROOM_NOTES.get(campus, {}).get(room, "")
 
     def _default_cross_rooms(self, campus, target_room):
-        return [
-            r for r in ROOM_DATA.get(campus, [])
-            if r != target_room and not self._cross_room_note(campus, r)
-        ]
+        # 首次打开不预选跨房间，避免默认扫描过多房间导致等待变长。
+        return []
 
     def _persist_cross_room_selection(self):
         if not getattr(self, "cross_room_checks", None):
@@ -825,15 +825,15 @@ class ConfigPanel(QWidget):
         )
 
         # 跨房间
-        self.cross_room.setChecked(cfg.get("cross_room", True))
+        self.cross_room.setChecked(cfg.get("cross_room", False))
         self.dry_run.setChecked(cfg.get("dry_run", False))
         self.receiver_email.setText(cfg.get("receiver_email", ""))
         self._rebuild_cross_room_options()
 
         # 模式
-        mode = cfg.get("mode", "multi")
+        mode = cfg.get("mode", "single")
         self.toggle.set_mode(mode)
-        self.single_frame.setVisible(mode == "single")
+        self._on_mode_changed(mode)
 
         # 提前通知
         pre = str(cfg.get("pre_notify", 30))

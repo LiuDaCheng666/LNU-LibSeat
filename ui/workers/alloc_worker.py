@@ -221,19 +221,12 @@ class AllocWorker(QObject):
         return merged
 
     def _cross_room_candidates(self, cfg, campus, target_room):
-        """读取用户勾选的跨房间范围；老配置默认排除有备注限制的房间。"""
+        """读取用户勾选的跨房间范围；缺省不预选额外房间。"""
         saved = cfg.get("cross_room_rooms") or {}
         if campus in saved:
             selected = list(saved.get(campus, []))
         else:
-            try:
-                from ui.panels.config_panel import ROOM_DATA, CROSS_ROOM_NOTES
-                selected = [
-                    r for r in ROOM_DATA.get(campus, [])
-                    if r != target_room and not CROSS_ROOM_NOTES.get(campus, {}).get(r)
-                ]
-            except Exception:
-                selected = []
+            selected = []
 
         primary_room = cfg.get("room", "")
         if primary_room and primary_room != target_room:
@@ -363,7 +356,7 @@ class AllocWorker(QObject):
 
             cfg = self._config
             accounts = cfg.get("accounts", [])
-            mode = cfg.get("mode", "multi")
+            mode = cfg.get("mode", "single")
 
             self._emit(f"模式: {'多账号分时段' if mode == 'multi' else '单账号逐段预约'}\n")
             self._emit(f"目标: {cfg.get('campus','')} / {cfg.get('room','')}\n")
@@ -372,7 +365,7 @@ class AllocWorker(QObject):
             if mode == "single":
                 self._emit(f"提前提醒: {cfg.get('pre_notify',30)} 分钟\n")
                 self._emit(f"自动取消: {'是' if cfg.get('auto_cancel',False) else '否'}\n")
-            self._emit(f"跨房间: {'是' if cfg.get('cross_room',True) else '否'}\n\n")
+            self._emit(f"跨房间: {'是' if cfg.get('cross_room', False) else '否'}\n\n")
             if cfg.get("dry_run", True):
                 self._emit("测试模式: 仅 API 抓取空闲座位并生成方案，不执行预约\n\n", "#00e676")
 
@@ -417,7 +410,7 @@ class AllocWorker(QObject):
         m.ALLOC_DAY_END = cfg.get("day_end", "21:00")
         m.ALLOC_MAX_ACCOUNTS = min(len(accounts), 3)
         m.ALLOC_DRY_RUN = cfg.get("dry_run", True)
-        m.ALLOC_CROSS_ROOM = cfg.get("cross_room", True)
+        m.ALLOC_CROSS_ROOM = cfg.get("cross_room", False)
         m.ALLOC_PRE_NOTIFY_MINUTES = cfg.get("pre_notify", 30)
         m.ALLOC_AUTO_CANCEL = cfg.get("auto_cancel", False)
         m.ALLOC_CROSS_ROOMS = []
@@ -492,7 +485,7 @@ class AllocWorker(QObject):
                 day_start=cfg.get("day_start", "09:00"),
                 day_end=cfg.get("day_end", "21:00"),
                 date=cfg.get("date", ""),
-                cross_room=cfg.get("cross_room", True),
+                cross_room=cfg.get("cross_room", False),
                 cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
                 preferred_seats=cfg.get("preferred_seats", {}),
                 priority_mode=cfg.get("priority_mode", "longest_first"),
@@ -512,7 +505,7 @@ class AllocWorker(QObject):
                     target_room=room,
                     preferred_seats=cfg.get("preferred_seats", {}),
                     priority_mode=cfg.get("priority_mode", "longest_first"),
-                    cross_room=cfg.get("cross_room", True),
+                    cross_room=cfg.get("cross_room", False),
                     cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
                 )
                 plan["multi_account_schedule_options"] = schedule_options
@@ -559,7 +552,7 @@ class AllocWorker(QObject):
                             current_room=first_slot.room_name,
                             preferred_seats=cfg.get("preferred_seats", {}),
                             priority_mode=cfg.get("priority_mode", "longest_first"),
-                            cross_room=cfg.get("cross_room", True),
+                            cross_room=cfg.get("cross_room", False),
                             cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
                             max_segments=2,
                         )
@@ -629,7 +622,7 @@ class AllocWorker(QObject):
         room = cfg.get("room", "")
         start = cfg.get("day_start", "09:00")
         end = cfg.get("day_end", "21:00")
-        cross_room = cfg.get("cross_room", True)
+        cross_room = cfg.get("cross_room", False)
         max_acc = min(len(accounts), 3)
 
         # 校正时间：实际开始时间 = max(当前时间, 配置开始, 6:30)
@@ -841,7 +834,7 @@ class AllocWorker(QObject):
         room = cfg.get("room", "")
         day_start = cfg.get("day_start", "09:00")
         day_end = cfg.get("day_end", "21:00")
-        cross_room = cfg.get("cross_room", True)
+        cross_room = cfg.get("cross_room", False)
         pre_notify = cfg.get("pre_notify", 30)
         auto_cancel = cfg.get("auto_cancel", False)
 

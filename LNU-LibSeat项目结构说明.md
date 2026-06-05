@@ -26,6 +26,7 @@ LNU-LibSeat 是一个图书馆座位预约桌面工具，使用 PySide6 提供�
 | 单账号恢复 | 重启后若存在上次运行状态，登录后查询“我的预约”，让用户选择继续上次计划、重新扫描或停止。 | `ui/main_window.py`, `ui/workers/alloc_worker.py`, `ui/runtime_state.py`, `core/desktop_notify.py` |
 | 首次帮助窗口 | 第一次打开程序自动弹出使用说明；标题栏 `?` 按钮可随时再次打开。 | `ui/main_window.py`, `ui/config_store.py` |
 | 主题切换 | 右上角月亮/太阳按钮切换亮色/暗色主题，切换后需要重启完全生效。 | `ui/main_window.py`, `ui/theme.py` |
+| 低动画模式 | 右上角 `动/低` 按钮暂停动态渐变，保留静态视觉效果，降低窗口可见时 CPU 占用。 | `ui/main_window.py`, `ui/widgets/animated_frame.py`, `ui/config_store.py` |
 
 ## 打包命名规则
 
@@ -35,7 +36,7 @@ LNU-LibSeat 是一个图书馆座位预约桌面工具，使用 PySide6 提供�
 
 ```python
 APP_NAME = "LNU-LibSeat"
-APP_VERSION = "v2.0.0"
+APP_VERSION = "v2.5.3"
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 ```
 
@@ -43,9 +44,9 @@ DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 
 | 产物 | 路径 |
 | --- | --- |
-| 发行文件夹 | `dist/LNU-LibSeat-v2.0.0/` |
-| 压缩包 | `dist/LNU-LibSeat-v2.0.0.zip` |
-| 可执行文件 | `dist/LNU-LibSeat-v2.0.0/LNU-LibSeat.exe` |
+| 发行文件夹 | `dist/LNU-LibSeat-v2.5.3/` |
+| 压缩包 | `dist/LNU-LibSeat-v2.5.3.zip` |
+| 可执行文件 | `dist/LNU-LibSeat-v2.5.3/LNU-LibSeat.exe` |
 
 支持自定义参数：
 
@@ -141,8 +142,8 @@ build_exe.bat --app-name MyLibSeat --dist-name 给同学用的座位工具
 | 文件 | 作用 |
 | --- | --- |
 | `ui/__init__.py` | 标记 `ui` 为 Python 包。 |
-| `ui/config_store.py` | GUI 配置读写。新增 `first_launch_help_shown` 用于控制首次帮助窗口是否已显示。 |
-| `ui/main_window.py` | 主窗口。组合配置面板、日志面板、状态栏、标题栏按钮、主题切换、首次帮助、关闭防误关和恢复检测。 |
+| `ui/config_store.py` | GUI 配置读写。保存 `first_launch_help_shown`、`low_animation` 等界面偏好。 |
+| `ui/main_window.py` | 主窗口。组合配置面板、日志面板、状态栏、标题栏按钮、主题切换、低动画模式、首次帮助、关闭防误关和恢复检测。 |
 | `ui/runtime_state.py` | 单账号逐段运行状态读写。负责保存、读取、清理 `single_runtime_state.json`。 |
 | `ui/theme.py` | UI 主题、颜色、字体、阴影、圆角和亮暗主题切换。 |
 
@@ -294,6 +295,7 @@ app.py
 - 多账号分时段怎么用。
 - 跨房间、优先座位、测试模式的含义。
 - 主题切换说明。
+- 低动画模式说明。
 - 关闭和恢复机制。
 - 运行注意事项。
 
@@ -307,16 +309,17 @@ app.py
 | `campus` | 目标校区。 |
 | `room` | 目标房间。 |
 | `day_start` / `day_end` | 目标时间范围。 |
-| `mode` | `multi` 表示多账号分时段；`single` 表示单账号逐段。 |
+| `mode` | `single` 表示单账号逐段；`multi` 表示多账号分时段。默认 `single`。 |
 | `dry_run` | 测试模式开关。 |
-| `cross_room` | 是否启用跨房间扫描。 |
-| `cross_room_rooms` | 每个校区勾选的跨房间候选。 |
+| `cross_room` | 是否启用跨房间扫描。默认关闭。 |
+| `cross_room_rooms` | 每个校区勾选的跨房间候选。默认不勾选任何跨房间；勾选越多等待越久。 |
 | `receiver_email` | 邮件接收地址。 |
 | `pre_notify` | 单账号模式下提前多少分钟扫描下一段。 |
 | `auto_cancel` | 单账号模式下是否自动取消并换座。 |
 | `priority_mode` | `longest_first` 表示最长时段优先；`prefer_first` 表示优先座位优先。 |
 | `preferred_seats` | 按 `校区/房间` 保存的优先座位列表。 |
 | `theme` | `auto`、`light` 或 `dark`。 |
+| `low_animation` | 低动画模式开关。 |
 | `first_launch_help_shown` | 首次帮助窗口是否已显示。 |
 
 ## Python 代码直接依赖关系摘要
@@ -341,7 +344,7 @@ app.py
 | `logic/scanner.py` | `core/logger.py`, `logic/booker.py`, `logic/navigator.py` |
 | `logic/scheduler.py` | `core/logger.py` |
 | `ui/config_store.py` | `core/paths.py` |
-| `ui/main_window.py` | `ui/config_store.py`, `ui/runtime_state.py`, `ui/panels/config_panel.py`, `ui/panels/log_panel.py`, `ui/theme.py`, `ui/workers/alloc_worker.py` |
+| `ui/main_window.py` | `ui/config_store.py`, `ui/runtime_state.py`, `ui/panels/config_panel.py`, `ui/panels/log_panel.py`, `ui/theme.py`, `ui/widgets/animated_frame.py`, `ui/workers/alloc_worker.py` |
 | `ui/runtime_state.py` | `core/paths.py` |
 | `ui/panels/config_panel.py` | `ui/config_store.py`, `ui/theme.py`, `ui/widgets/account_card.py`, `ui/widgets/action_button.py`, `ui/widgets/animated_frame.py`, `ui/widgets/time_range.py`, `ui/widgets/toggle_group.py` |
 | `ui/panels/log_panel.py` | `ui/theme.py` |

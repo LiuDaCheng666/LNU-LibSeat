@@ -18,7 +18,7 @@ ALLOC_DAY_START = "09:00"
 ALLOC_DAY_END = "21:00"
 
 # ── 模式: "multi" = 多账号分时段 | "single" = 单账号逐段 ──
-ALLOCATION_MODE = "multi"
+ALLOCATION_MODE = "single"
 
 # ── 测试模式: 只抓取 API 空闲座位并生成方案，不执行预约 ──
 ALLOC_DRY_RUN = False
@@ -27,7 +27,7 @@ ALLOC_DRY_RUN = False
 ALLOC_MAX_ACCOUNTS = 3
 
 # ── 跨房间搜索 ──
-ALLOC_CROSS_ROOM = True
+ALLOC_CROSS_ROOM = False
 ALLOC_CROSS_ROOMS = []
 
 # ── 单账号模式: 提前多少分钟查找下一座位 ──

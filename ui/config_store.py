@@ -19,9 +19,9 @@ DEFAULT_CONFIG = {
     "room": "三楼智慧研修空间",
     "day_start": "09:00",
     "day_end": "21:00",
-    "mode": "multi",
+    "mode": "single",
     "dry_run": False,
-    "cross_room": True,
+    "cross_room": False,
     "cross_room_rooms": {},
     "receiver_email": "",
     "pre_notify": 30,
@@ -29,6 +29,7 @@ DEFAULT_CONFIG = {
     "priority_mode": "longest_first",
     "preferred_seats": {},
     "theme": "auto",  # "auto" | "light" | "dark"
+    "low_animation": False,
     "first_launch_help_shown": False,
 }
 

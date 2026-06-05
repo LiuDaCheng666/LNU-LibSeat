@@ -19,16 +19,17 @@
 | `room` | str | 目标房间。 |
 | `day_start` | str | 目标开始时间，例如 `09:00`。 |
 | `day_end` | str | 目标结束时间，例如 `21:00`。 |
-| `mode` | str | `single` 单账号逐段；`multi` 多账号分时段。 |
+| `mode` | str | `single` 单账号逐段；`multi` 多账号分时段。默认 `single`。 |
 | `dry_run` | bool | 测试模式，不执行真实预约/取消/换座。 |
-| `cross_room` | bool | 是否启用跨房间搜索。 |
-| `cross_room_rooms` | dict | 每个校区勾选的跨房间候选。 |
+| `cross_room` | bool | 是否启用跨房间搜索。默认 `false`。 |
+| `cross_room_rooms` | dict | 每个校区勾选的跨房间候选。默认不勾选任何跨房间，勾选越多等待越久。 |
 | `receiver_email` | str | 邮件接收地址。 |
 | `pre_notify` | int | 单账号提前多少分钟扫描下一段。 |
 | `auto_cancel` | bool | 单账号是否自动取消并换座。 |
 | `priority_mode` | str | `longest_first` 或 `prefer_first`。 |
 | `preferred_seats` | dict | 按 `校区/房间` 保存的优先座位。 |
 | `theme` | str | `auto`、`light` 或 `dark`。 |
+| `low_animation` | bool | 是否开启低动画模式；开启后暂停动态渐变以降低窗口可见时的 CPU 占用。 |
 | `first_launch_help_shown` | bool | 首次帮助窗口是否已经显示。 |
 
 ## `single_runtime_state.json`

@@ -1,4 +1,6 @@
 """渐变框 — 8 色标宽谱渐变 + 柔和玻璃反光"""
+import weakref
+
 from PySide6.QtCore import Property, QPropertyAnimation, QEasingCurve, Qt, QPointF
 from PySide6.QtGui import (
     QLinearGradient, QPainter, QPen, QColor, QPainterPath,
@@ -59,6 +61,8 @@ DARK_PALETTES = {
 }
 
 CURRENT_PALETTE = "aurora"
+_LOW_ANIMATION_MODE = False
+_ANIMATED_FRAMES = weakref.WeakSet()
 
 
 def set_palette(name: str):
@@ -72,6 +76,20 @@ def cycle_palette():
     idx = keys.index(CURRENT_PALETTE)
     set_palette(keys[(idx + 1) % len(keys)])
     return CURRENT_PALETTE
+
+
+def is_low_animation_mode() -> bool:
+    return _LOW_ANIMATION_MODE
+
+
+def set_low_animation_mode(enabled: bool):
+    global _LOW_ANIMATION_MODE
+    _LOW_ANIMATION_MODE = bool(enabled)
+    for frame in list(_ANIMATED_FRAMES):
+        try:
+            frame._sync_animation_state()
+        except RuntimeError:
+            pass
 
 
 def _palette_colors():
@@ -95,6 +113,7 @@ class AnimatedGradientFrame(QFrame):
         super().__init__(parent)
         self._phase = 0.0
         self._accent_side = accent_side
+        _ANIMATED_FRAMES.add(self)
 
         self._anim = QPropertyAnimation(self, b"phase")
         self._anim.setDuration(7200)  # 7.2 秒，比之前快 ~35%
@@ -103,15 +122,26 @@ class AnimatedGradientFrame(QFrame):
         self._anim.setEasingCurve(QEasingCurve.Type.InOutSine)
         self._anim.setLoopCount(-1)
         self._anim.start()
+        self._sync_animation_state()
 
     def get_phase(self): return self._phase
     def set_phase(self, v): self._phase = v; self.update()
     phase = Property(float, get_phase, set_phase)
 
+    def _sync_animation_state(self):
+        if _LOW_ANIMATION_MODE or not self.isVisible():
+            if self._anim.state() == QPropertyAnimation.State.Running:
+                self._anim.pause()
+            return
+
+        if self._anim.state() == QPropertyAnimation.State.Stopped:
+            self._anim.start()
+        elif self._anim.state() == QPropertyAnimation.State.Paused:
+            self._anim.resume()
+
     def showEvent(self, e):
         super().showEvent(e)
-        if self._anim.state() != QPropertyAnimation.State.Running:
-            self._anim.resume()
+        self._sync_animation_state()
 
     def hideEvent(self, e):
         super().hideEvent(e)

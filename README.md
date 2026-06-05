@@ -9,7 +9,7 @@
 
 # LNU-LibSeat
 
-### 辽宁大学图书馆座位预约助手 · v2.5.2
+### 辽宁大学图书馆座位预约助手 · v2.5.3
 
 基于 PySide6 图形界面、LibSeat API 扫描规划和 Selenium 自动预约，支持单账号逐段换座、多账号多方案选择、跨房间候选选择、续约计划倒计时、运行恢复和首次帮助引导。
 
@@ -44,14 +44,14 @@
 
 **不懂 Python 能不能用？完全能用。** 你不需要安装 Python，也不需要打开源码，只下载打包好的 exe 即可。
 
-1. 在 GitHub 页面右侧找到 **Releases**，点击进入发布页面。当前最新版本是 **v2.5.2**。
-2. 下载 `LNU-LibSeat-v2.5.2.zip`，或直接点击这里下载：[LNU-LibSeat-v2.5.2.zip](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/download/v2.5.2/LNU-LibSeat-v2.5.2.zip)。
+1. 在 GitHub 页面右侧找到 **Releases**，点击进入发布页面。当前最新版本是 **v2.5.3**。
+2. 下载 `LNU-LibSeat-v2.5.3.zip`，或直接点击这里下载：[LNU-LibSeat-v2.5.3.zip](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/download/v2.5.3/LNU-LibSeat-v2.5.3.zip)。
 3. 解压后双击 `LNU-LibSeat.exe`。首次打开会弹出使用帮助，第一次建议先开启“测试模式”。
 
 常用入口：
 
 - 发布页：[GitHub Releases](https://github.com/LiuDaCheng666/LNU-LibSeat/releases)
-- 最新版本：[LNU-LibSeat v2.5.2](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/tag/v2.5.2)
+- 最新版本：[LNU-LibSeat v2.5.3](https://github.com/LiuDaCheng666/LNU-LibSeat/releases/tag/v2.5.3)
 - 新手教程：[快速开始文档](docs/QUICKSTART.md)
 
 ---
@@ -67,8 +67,11 @@ LNU-LibSeat 是一个面向辽宁大学图书馆座位预约系统的桌面工�
 - 单账号逐段成功后，右侧会显示续约计划、下一次扫描时间和倒计时。
 - 误关程序后，下次启动可读取关闭前的单账号续约计划，并由用户选择继续接管或忽略。
 
-## v2.5.2 更新
+## v2.5.3 更新
 
+- 新增低动画模式：标题栏右上角 `动/低` 按钮可暂停动态渐变，保留静态视觉效果，降低窗口可见时的 CPU 占用。
+- 首次打开默认使用单账号逐段模式；跨房间搜索默认关闭，且跨房间房间默认不勾选，避免默认扫描过多房间。
+- 测试/方案摘要会提示局部 API 接口警告，少量座位或时间点超时时会说明已跳过对应数据。
 - 单账号逐段增加“续约计划”状态区：显示当前预约、目标覆盖、下一次扫描时间、倒计时和后续预案。
 - 单账号跨房间不再只能接受最终推荐，首次预约和下一段换座都可从当前房间、全局最佳和勾选房间最佳候选中选择。
 - 多账号模式会生成最多 3 套完整分段方案，用户选择一套后再执行。若账号 1 单独能覆盖目标时长，也会作为合法方案展示。
@@ -126,11 +129,11 @@ LNU-LibSeat 是一个面向辽宁大学图书馆座位预约系统的桌面工�
 </td>
 <td width="33%" valign="top">
 <h3>跨房间搜索</h3>
-目标房间没有合适方案时，可扫描勾选的其他房间。最终预约前可选择当前房间或任一勾选房间的最佳候选。
+默认关闭。目标房间没有合适方案时，可开启并勾选愿意接受的房间；勾选越多，等待越久。
 </td>
 <td width="33%" valign="top">
-<h3>首次帮助和主题</h3>
-首次打开自动展示使用说明。支持亮色/暗色主题切换，重启后完整生效。
+<h3>首次帮助、主题和低动画</h3>
+首次打开自动展示使用说明。支持亮色/暗色主题切换；标题栏 `动/低` 按钮可暂停动态渐变，降低窗口可见时的 CPU 占用。
 </td>
 </tr>
 </table>
@@ -183,7 +186,7 @@ LNU-LibSeat 是一个面向辽宁大学图书馆座位预约系统的桌面工�
 🏛️ 场景：目标房间只有短时间座位，但你愿意去二楼/三楼其他房间。
 
 1. 开启“跨房间搜索”。
-2. 只勾选你愿意去的房间。
+2. 只勾选你愿意去的房间；勾选越多，扫描等待越久。
 3. 程序会比较当前房间和跨房间候选。
 4. 弹窗会列出当前房间候选、全局最佳和每个勾选房间的最佳座位。
 5. 你可以选择当前房间，也可以选择时间更长的其他房间。
@@ -207,7 +210,7 @@ LNU-LibSeat 是一个面向辽宁大学图书馆座位预约系统的桌面工�
 
 ### 方式一：运行打包版
 
-1. 下载或构建 `dist/LNU-LibSeat-v2.5.2.zip`。
+1. 下载或构建 `dist/LNU-LibSeat-v2.5.3.zip`。
 2. 解压到任意目录。
 3. 双击 `LNU-LibSeat.exe`。
 4. 阅读首次帮助窗口。
@@ -338,7 +341,7 @@ flowchart TD
 | [架构说明](docs/ARCHITECTURE.md) | 模块职责和运行链路。 |
 | [预约与恢复流程](docs/FLOWS.md) | Mermaid 流程图。 |
 | [恢复机制详解](docs/RECOVERY_AND_STATE.md) | `single_runtime_state.json` 和恢复策略。 |
-| [v2.5.2 发布说明](docs/RELEASE_BODY_v2.5.2.md) | 本版本更新内容和使用提示。 |
+| [v2.5.3 发布说明](docs/RELEASE_BODY_v2.5.3.md) | 本版本更新内容和使用提示。 |
 | [打包与发布](docs/BUILD_AND_RELEASE.md) | PyInstaller 打包和 GitHub 上传建议。 |
 | [常见问题](docs/FAQ.md) | 常见问题和排查建议。 |
 
@@ -380,14 +383,14 @@ LNU-LibSeat/
 
 | 产物 | 路径 |
 | --- | --- |
-| 发行目录 | `dist/LNU-LibSeat-v2.5.2/` |
-| 压缩包 | `dist/LNU-LibSeat-v2.5.2.zip` |
-| exe | `dist/LNU-LibSeat-v2.5.2/LNU-LibSeat.exe` |
+| 发行目录 | `dist/LNU-LibSeat-v2.5.3/` |
+| 压缩包 | `dist/LNU-LibSeat-v2.5.3.zip` |
+| exe | `dist/LNU-LibSeat-v2.5.3/LNU-LibSeat.exe` |
 
 自定义版本或发行名：
 
 ```powershell
-.\build_exe.bat --app-version v2.5.2
+.\build_exe.bat --app-version v2.5.3
 .\build_exe.bat --dist-name 给同学用的座位工具
 ```
 

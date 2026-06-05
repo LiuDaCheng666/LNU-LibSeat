@@ -16,6 +16,9 @@ from .panels.config_panel import ConfigPanel
 from .panels.log_panel import LogPanel
 from .runtime_state import clear_single_runtime_state, load_single_runtime_state
 from .workers.alloc_worker import AllocWorker
+from .widgets.animated_frame import set_low_animation_mode
+
+APP_VERSION = "v2.5.3"
 
 
 def _bj_now():
@@ -29,6 +32,8 @@ class MainWindow(QMainWindow):
         # ── 主题：优先读取已保存偏好，否则跟随系统 ──
         saved = load_config()
         self._saved_config = dict(saved)
+        self._low_animation_enabled = bool(saved.get("low_animation", False))
+        set_low_animation_mode(self._low_animation_enabled)
         saved_theme = saved.get("theme", "auto")
         if saved_theme in ("light", "dark"):
             set_theme(saved_theme)
@@ -95,7 +100,7 @@ class MainWindow(QMainWindow):
         self.config_panel.apply_config(saved)
 
         # 初始日志
-        self.log_panel.log(f"  LibSeat Allocator v1.0.0\n", C.TERM_ACCENT)
+        self.log_panel.log(f"  LibSeat Allocator {APP_VERSION}\n", C.TERM_ACCENT)
         theme_text = "暗色" if current_theme() == "dark" else "亮色"
         self.log_panel.log(f"  {_bj_now().strftime('%Y-%m-%d %H:%M:%S')}   系统就绪  |  主题: {theme_text}\n\n", C.TERM_GREEN)
         if not saved.get("first_launch_help_shown", False):
@@ -188,6 +193,15 @@ class MainWindow(QMainWindow):
         self.theme_btn.clicked.connect(self._on_toggle_theme)
         tl.addWidget(self.theme_btn)
 
+        self.low_anim_btn = QPushButton()
+        self.low_anim_btn.setFont(sans(9, bold=True))
+        self.low_anim_btn.setFixedSize(38, 28)
+        self.low_anim_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.low_anim_btn.setFlat(True)
+        self._refresh_low_animation_btn()
+        self.low_anim_btn.clicked.connect(self._on_toggle_low_animation)
+        tl.addWidget(self.low_anim_btn)
+
         # 窗口控制按钮 — 使用 QPushButton 以获得更好的 hover 效果
         for icon, action, hover_color in [
             ("─", "min", C.ACCENT),
@@ -235,6 +249,51 @@ class MainWindow(QMainWindow):
             self.theme_btn.setText("☾")
             self.theme_btn.setToolTip("切换为暗色主题")
 
+    def _refresh_low_animation_btn(self):
+        if self._low_animation_enabled:
+            text = "低"
+            color = C.SUCCESS
+            hover_color = C.SUCCESS
+            bg = C.ACCENT_SOFT
+            tooltip = "低动画模式已开启：动态渐变已暂停，点击恢复动画"
+        else:
+            text = "动"
+            color = C.TEXT_MUTED
+            hover_color = C.ACCENT
+            bg = "transparent"
+            tooltip = "点击开启低动画模式：暂停动态渐变以降低占用"
+
+        self.low_anim_btn.setText(text)
+        self.low_anim_btn.setToolTip(tooltip)
+        self.low_anim_btn.setStyleSheet(f"""
+            QPushButton {{
+                color: {color};
+                background: {bg};
+                border: none;
+                border-radius: {RADIUS_SM}px;
+                padding: 0;
+            }}
+            QPushButton:hover {{
+                color: {hover_color};
+                background: {C.GRAY_300};
+            }}
+        """)
+
+    def _on_toggle_low_animation(self):
+        self._low_animation_enabled = not self._low_animation_enabled
+        set_low_animation_mode(self._low_animation_enabled)
+        self._refresh_low_animation_btn()
+
+        cfg = self._collect_config_for_save()
+        cfg["low_animation"] = self._low_animation_enabled
+        self._save_config(cfg)
+
+        if hasattr(self, "log_panel"):
+            if self._low_animation_enabled:
+                self.log_panel.log("  低动画模式已开启：动态渐变已暂停，以降低空闲占用。\n", C.TERM_GREEN)
+            else:
+                self.log_panel.log("  低动画模式已关闭：动态渐变已恢复。\n", C.TERM_YELLOW)
+
     def _on_toggle_theme(self):
         """切换主题：保存偏好 → 弹窗提示用户手动重启"""
         new_theme = "dark" if current_theme() == "light" else "light"
@@ -271,7 +330,7 @@ class MainWindow(QMainWindow):
         return f"""
         <html>
         <body style="font-family:'Microsoft YaHei UI','Segoe UI',sans-serif; font-size:13px; color:{C.TEXT}; line-height:1.6;">
-          <h2 style="margin:0 0 8px 0; color:{C.ACCENT};">LibSeat Allocator v2.5.2 使用帮助</h2>
+          <h2 style="margin:0 0 8px 0; color:{C.ACCENT};">LibSeat Allocator {APP_VERSION} 使用帮助</h2>
           <p>这个工具用于按你的账号、校区、房间和时间段，先扫描可用座位，再让你选择候选或整套方案，最后自动完成真实预约。</p>
 
           <h3>1. 普通预约</h3>
@@ -290,10 +349,11 @@ class MainWindow(QMainWindow):
 
           <h3>重要选项</h3>
           <ul>
-            <li><b>跨房间搜索：</b>目标房间没有合适座位时，可扫描你勾选的其他房间；最终预约前可手动选择当前房间或其他房间候选。</li>
+            <li><b>跨房间搜索：</b>默认关闭。开启后只扫描你勾选的其他房间；勾选越多，API 请求越多，等待时间越久。最终预约前可手动选择当前房间或其他房间候选。</li>
             <li><b>优先座位：</b>填写常用座位号后，可以选择“优先座位优先”。如果优先座位不可用，会回退到可用的较长时段。</li>
             <li><b>测试模式：</b>只扫描并生成候选/方案，不执行预约、取消或换座。单账号测试模式会显示续约预览，但不会保存为可恢复任务。</li>
             <li><b>主题切换：</b>右上角月亮/太阳按钮可以切换亮色和暗色主题。主题切换需要重启应用才能完全生效。</li>
+            <li><b>低动画模式：</b>右上角“动/低”按钮可以暂停动态渐变，保留静态视觉效果，同时降低窗口可见时的 CPU 占用。</li>
           </ul>
 
           <h3>关闭和恢复</h3>
@@ -309,7 +369,7 @@ class MainWindow(QMainWindow):
             <li>遇到页面结构变化或异常提示，请保留日志并反馈。</li>
           </ul>
 
-          <p style="color:{C.TEXT_MUTED};">你可以随时点击窗口右上角的 ? 按钮再次打开本帮助。</p>
+          <p style="color:{C.TEXT_MUTED};">你可以随时点击窗口右上角的 ? 按钮再次打开本帮助；如果窗口打开时 CPU 占用偏高，可以点击“动”切换到低动画模式。</p>
         </body>
         </html>
         """
@@ -373,6 +433,7 @@ class MainWindow(QMainWindow):
         cfg = dict(base or self.config_panel.collect())
         saved = getattr(self, "_saved_config", {}) or {}
         cfg["theme"] = saved.get("theme", "auto")
+        cfg["low_animation"] = bool(getattr(self, "_low_animation_enabled", saved.get("low_animation", False)))
         cfg["first_launch_help_shown"] = bool(saved.get("first_launch_help_shown", False))
         return cfg
 
@@ -417,7 +478,7 @@ class MainWindow(QMainWindow):
         sl.addSpacing(20)
 
         # 版本号
-        ver = QLabel("v1.0.0")
+        ver = QLabel(APP_VERSION)
         ver.setFont(sans(8))
         ver.setStyleSheet(f"color: {C.TEXT_DIM}; background: transparent;")
         sl.addWidget(ver)
@@ -549,7 +610,7 @@ class MainWindow(QMainWindow):
 
         self.log_panel.clear()
         self._on_plan_status({})
-        self.log_panel.log(f"  LibSeat Allocator v1.0.0\n", C.TERM_ACCENT)
+        self.log_panel.log(f"  LibSeat Allocator {APP_VERSION}\n", C.TERM_ACCENT)
         self.log_panel.log(f"  {_bj_now().strftime('%Y-%m-%d %H:%M:%S')}   开始分配\n", C.TERM_YELLOW)
         acc_count = len(cfg["accounts"])
         mode_text = "多账号分时段" if cfg["mode"] == "multi" else "单账号逐段"

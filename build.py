@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parent
 APP_NAME = "LNU-LibSeat"
-APP_VERSION = "v2.5.2"
+APP_VERSION = "v2.5.3"
 APP_ICON = "OIP-C.ico"
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 DIST_ROOT = ROOT / "dist"
@@ -52,9 +52,9 @@ CLEAN_CONFIG = {
     "room": "三楼智慧研修空间",
     "day_start": "09:00",
     "day_end": "22:00",
-    "mode": "multi",
+    "mode": "single",
     "dry_run": False,
-    "cross_room": True,
+    "cross_room": False,
     "cross_room_rooms": {},
     "receiver_email": "",
     "pre_notify": 30,
@@ -62,6 +62,7 @@ CLEAN_CONFIG = {
     "priority_mode": "longest_first",
     "preferred_seats": {},
     "theme": "auto",
+    "low_animation": False,
 }
 
 

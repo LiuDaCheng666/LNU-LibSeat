@@ -545,7 +545,7 @@ def build_api_plan(
     day_start: str,
     day_end: str,
     date: str = "",
-    cross_room: bool = True,
+    cross_room: bool = False,
     preferred_seats: Optional[Dict[str, List[str]]] = None,
     priority_mode: str = "longest_first",
     accounts_count: int = 1,
@@ -863,7 +863,7 @@ def build_multi_account_schedule(
     target_room: str,
     preferred_seats: Optional[Dict[str, List[str]]] = None,
     priority_mode: str = "longest_first",
-    cross_room: bool = True,
+    cross_room: bool = False,
     cross_room_min_gain_minutes: int = 0,
     tolerance_minutes: int = 30,
     excluded_keys: Optional[Iterable[Tuple[str, str, str, str]]] = None,
@@ -1005,7 +1005,7 @@ def build_multi_account_schedule_options(
     target_room: str,
     preferred_seats: Optional[Dict[str, List[str]]] = None,
     priority_mode: str = "longest_first",
-    cross_room: bool = True,
+    cross_room: bool = False,
     cross_room_min_gain_minutes: int = 0,
     max_options: int = 3,
 ) -> List[Dict[str, Any]]:
@@ -1116,7 +1116,7 @@ def build_single_followup_preview(
     current_room: str,
     preferred_seats: Optional[Dict[str, List[str]]] = None,
     priority_mode: str = "longest_first",
-    cross_room: bool = True,
+    cross_room: bool = False,
     cross_room_min_gain_minutes: int = 0,
     max_segments: int = 2,
     tolerance_minutes: int = 30,
@@ -1165,6 +1165,47 @@ def build_single_followup_preview(
     return segments
 
 
+def _short_scan_error(key: str) -> str:
+    text = str(key or "未知原因").replace("\n", " ").strip()
+    text = text.replace("HTTPConnectionPool(host='libseat.lnu.edu.cn', port=80): ", "")
+    text = text.replace("Max retries exceeded with url:", "重试后仍失败:")
+    if text.startswith("start:"):
+        text = "开始时间接口: " + text[len("start:"):]
+    elif text.startswith("end:"):
+        text = "结束时间接口: " + text[len("end:"):]
+    return text[:60]
+
+
+def _scan_warning_summary(rooms: List[Dict[str, Any]]) -> str:
+    warning_prefixes = ("start:", "end:", "exception:")
+    warning_keys = {"no_layout_seats", "bad_start_time", "bad_end_time"}
+    total = 0
+    room_parts: List[str] = []
+    for room in rooms or []:
+        errors = room.get("errors") or {}
+        if not isinstance(errors, dict):
+            continue
+        notable = []
+        for key, value in errors.items():
+            key_text = str(key)
+            if key_text.startswith(warning_prefixes) or key_text in warning_keys:
+                count = int(value or 0)
+                if count > 0:
+                    notable.append((key_text, count))
+        if not notable:
+            continue
+        room_total = sum(count for _, count in notable)
+        total += room_total
+        reasons = "，".join(f"{_short_scan_error(key)} x{count}" for key, count in notable[:2])
+        room_parts.append(f"{room.get('room', '未知房间')} {room_total} 次（{reasons}）")
+
+    if not total:
+        return ""
+    detail = "；".join(room_parts[:3])
+    suffix = f"：{detail}" if detail else ""
+    return f"局部接口警告: {total} 次，已跳过对应座位/时间点，其他成功数据仍用于生成方案{suffix}"
+
+
 def format_multi_schedule_summary(plan: Dict[str, Any], schedule: Dict[str, Any], dry_run: bool = False) -> str:
     rooms = plan.get("rooms_scanned", []) or []
     total_intervals = sum(int(room.get("interval_count", 0)) for room in rooms)
@@ -1175,6 +1216,9 @@ def format_multi_schedule_summary(plan: Dict[str, Any], schedule: Dict[str, Any]
         f"扫描房间: {len(rooms)} 个，空闲时间段: {total_intervals} 条",
         f"分段方案: {schedule.get('segment_count', 0)} 段，覆盖 {schedule.get('total_covered_minutes', 0)}/{schedule.get('desired_minutes', 0)} 分钟",
     ]
+    warning_summary = _scan_warning_summary(rooms)
+    if warning_summary:
+        lines.append(warning_summary)
     for idx, seg in enumerate(schedule.get("segments", []) or [], start=1):
         lines.append(
             f"第{idx}段: {seg.get('room_name')} / 座位{seg.get('seat_num')} / "
@@ -1199,6 +1243,9 @@ def format_multi_schedule_options_summary(
         f"扫描房间: {len(rooms)} 个，空闲时间段: {total_intervals} 条",
         f"可选方案: {len(schedule_options)} 套",
     ]
+    warning_summary = _scan_warning_summary(rooms)
+    if warning_summary:
+        lines.append(warning_summary)
     for idx, option in enumerate(schedule_options, start=1):
         schedule = option.get("schedule", {}) or {}
         lines.append(f"方案{idx}: {option.get('title', '')} - {option.get('description', '')}")
@@ -1248,6 +1295,9 @@ def format_plan_summary(plan: Dict[str, Any], dry_run: bool = True) -> str:
         f"当前房间规则选择: {_format_interval(selection.get('current_room_choice'))}",
         f"当前房间最长时段: {_format_interval(selection.get('current_room_best'))}",
     ]
+    warning_summary = _scan_warning_summary(rooms)
+    if warning_summary:
+        lines.append(warning_summary)
     if config.get("cross_room"):
         lines.append(f"跨房间最佳候选: {_format_interval(selection.get('cross_room_best'))}")
     lines.extend([

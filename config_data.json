@@ -23,5 +23,6 @@
   "priority_mode": "longest_first",
   "preferred_seats": {},
   "theme": "auto",
+  "low_animation": true,
   "first_launch_help_shown": true
 }
