@@ -174,6 +174,8 @@ def pyinstaller_cmd(py: Path) -> list[str]:
         "mss",
         "--collect-data",
         "certifi",
+        "--hidden-import",
+        "tkinter",
     ]
     for model in sorted((ROOT / "core" / "checkpoints").glob("*.onnx")):
         cmd += ["--add-data", add_data_arg(model, "core/checkpoints")]

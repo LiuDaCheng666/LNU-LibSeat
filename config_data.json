@@ -16,6 +16,7 @@
     ]
   },
   "dry_run": false,
+  "api_scan_workers": 10,
   "receiver_email": "",
   "mode": "single",
   "pre_notify": 30,
