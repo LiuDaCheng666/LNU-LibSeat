@@ -227,10 +227,9 @@ class AccountPanel(QWidget):
 
     def set_mode(self, mode):
         """单账号模式只显示第1个卡片；多账号模式恢复全部"""
-        if mode == self._mode:
-            return
         self._mode = mode
         if mode == "single":
+            self._hidden_cards.clear()
             # 隐藏第2个及之后的卡片
             for i, card in enumerate(self._cards):
                 if i > 0:
@@ -266,4 +265,5 @@ class AccountPanel(QWidget):
         for i, (acc, pwd) in enumerate(accounts):
             if i < len(self._cards):
                 self._cards[i].set_values(acc, pwd)
+        self.set_mode(self._mode)
         self._update_add_btn()

@@ -12,7 +12,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parent
 APP_NAME = "LNU-LibSeat"
-APP_VERSION = "v2.5.3"
+APP_VERSION = "v2.6.0"
 APP_ICON = "OIP-C.ico"
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 DIST_ROOT = ROOT / "dist"
@@ -54,6 +54,7 @@ CLEAN_CONFIG = {
     "day_end": "22:00",
     "mode": "single",
     "dry_run": False,
+    "api_scan_workers": 10,
     "cross_room": False,
     "cross_room_rooms": {},
     "receiver_email": "",

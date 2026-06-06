@@ -50,6 +50,7 @@ class AllocWorker(QObject):
     finished = Signal()
     status_changed = Signal(str)
     plan_status_changed = Signal(dict)
+    selection_requested = Signal(dict)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -58,8 +59,12 @@ class AllocWorker(QObject):
         self._config = {}
         self._active_driver = None
         self._driver_lock = threading.Lock()
+        self._driver_quit_thread = None
         self._single_runtime_state = None
         self._single_runtime_lock = threading.Lock()
+        self._selection_lock = threading.Lock()
+        self._selection_counter = 0
+        self._selection_waits = {}
 
     def is_running(self):
         return self._thread is not None and self._thread.is_alive()
@@ -78,11 +83,24 @@ class AllocWorker(QObject):
         with self._driver_lock:
             driver = self._active_driver
         if driver:
+            self._quit_driver_async(driver)
+        with self._selection_lock:
+            waits = list(self._selection_waits.items())
+        for request_id, state in waits:
+            state["choice"] = state.get("default", "abort")
+            state["event"].set()
+
+    def _quit_driver_async(self, driver):
+        def _quit():
             try:
                 driver.quit()
             except Exception:
                 pass
             self._clear_active_driver(driver)
+
+        thread = threading.Thread(target=_quit, daemon=True)
+        thread.start()
+        self._driver_quit_thread = thread
 
     def _emit(self, text, color="#e8e8f0"):
         self.log_line.emit(text, color)
@@ -95,6 +113,67 @@ class AllocWorker(QObject):
         with self._driver_lock:
             if driver is None or self._active_driver is driver:
                 self._active_driver = None
+
+    def provide_selection_result(self, request_id: str, choice: str):
+        with self._selection_lock:
+            state = self._selection_waits.get(str(request_id))
+        if not state:
+            return
+        state["choice"] = str(choice or state.get("default", "abort"))
+        state["event"].set()
+
+    def _request_selection(self, payload: dict) -> str:
+        default_choice = str(payload.get("default_choice", "abort"))
+        timeout_seconds = int(payload.get("timeout_seconds", 300) or 0)
+        if self._stop_event is not None and self._stop_event.is_set():
+            return default_choice
+        with self._selection_lock:
+            self._selection_counter += 1
+            request_id = f"selection-{self._selection_counter}"
+            event = threading.Event()
+            self._selection_waits[request_id] = {
+                "event": event,
+                "choice": default_choice,
+                "default": default_choice,
+            }
+        payload = dict(payload)
+        payload["request_id"] = request_id
+        self.selection_requested.emit(payload)
+
+        deadline = _time.monotonic() + timeout_seconds if timeout_seconds > 0 else None
+        while True:
+            if event.wait(0.1):
+                break
+            if self._stop_event is not None and self._stop_event.is_set():
+                self.provide_selection_result(request_id, default_choice)
+                break
+            if deadline is not None and _time.monotonic() >= deadline:
+                self.provide_selection_result(request_id, default_choice)
+                break
+
+        with self._selection_lock:
+            state = self._selection_waits.pop(request_id, None)
+        return str((state or {}).get("choice", default_choice))
+
+    def _select_schedule_option(self, title: str, message: str, schedule_options: list, default_choice: str, timeout_seconds: int) -> str:
+        return self._request_selection({
+            "kind": "schedule",
+            "title": title,
+            "message": message,
+            "items": list(schedule_options or []),
+            "default_choice": default_choice,
+            "timeout_seconds": timeout_seconds,
+        })
+
+    def _select_seat_option(self, title: str, message: str, options: list, default_choice: str, timeout_seconds: int) -> str:
+        return self._request_selection({
+            "kind": "seat",
+            "title": title,
+            "message": message,
+            "items": list(options or []),
+            "default_choice": default_choice,
+            "timeout_seconds": timeout_seconds,
+        })
 
     def save_runtime_state(self, reason="manual"):
         """Persist the latest in-memory single-account runtime snapshot."""
@@ -119,6 +198,7 @@ class AllocWorker(QObject):
             "priority_mode",
             "cross_room_min_gain_minutes",
             "api_report_include_intervals",
+            "api_scan_workers",
             "pre_notify",
             "auto_cancel",
             "notify_timeout",
@@ -410,6 +490,7 @@ class AllocWorker(QObject):
         m.ALLOC_DAY_END = cfg.get("day_end", "21:00")
         m.ALLOC_MAX_ACCOUNTS = min(len(accounts), 3)
         m.ALLOC_DRY_RUN = cfg.get("dry_run", True)
+        m.API_SCAN_WORKERS = cfg.get("api_scan_workers", 10)
         m.ALLOC_CROSS_ROOM = cfg.get("cross_room", False)
         m.ALLOC_PRE_NOTIFY_MINUTES = cfg.get("pre_notify", 30)
         m.ALLOC_AUTO_CANCEL = cfg.get("auto_cancel", False)
@@ -438,7 +519,7 @@ class AllocWorker(QObject):
             save_plan_report,
         )
         from core.api_client import APIClient, extract_token
-        from core.desktop_notify import notify_option_choice
+        from core.desktop_notify import ScanProgressWindow
         from core.driver import get_driver
 
         if not accounts:
@@ -475,26 +556,33 @@ class AllocWorker(QObject):
             self._emit("[API测试 3/4] API 全量抓取空闲座位时间段...\n", "#7c5cfc")
             client = APIClient(token, driver=driver)
 
+            progress_window = ScanProgressWindow("API 扫描进度").start()
+
             def progress(message):
                 self._emit(f"  {message}\n", "#8888aa")
+                progress_window.update(message)
 
-            plan = build_api_plan(
-                client,
-                campus=campus,
-                target_room=room,
-                day_start=cfg.get("day_start", "09:00"),
-                day_end=cfg.get("day_end", "21:00"),
-                date=cfg.get("date", ""),
-                cross_room=cfg.get("cross_room", False),
-                cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
-                preferred_seats=cfg.get("preferred_seats", {}),
-                priority_mode=cfg.get("priority_mode", "longest_first"),
-                accounts_count=len(accounts),
-                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
-                include_intervals=True if cfg.get("mode") == "multi" else cfg.get("dry_run_include_intervals", True),
-                stop_event=self._stop_event,
-                progress=progress,
-            )
+            try:
+                plan = build_api_plan(
+                    client,
+                    campus=campus,
+                    target_room=room,
+                    day_start=cfg.get("day_start", "09:00"),
+                    day_end=cfg.get("day_end", "21:00"),
+                    date=cfg.get("date", ""),
+                    cross_room=cfg.get("cross_room", False),
+                    cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
+                    preferred_seats=cfg.get("preferred_seats", {}),
+                    priority_mode=cfg.get("priority_mode", "longest_first"),
+                    accounts_count=len(accounts),
+                    cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                    include_intervals=True if cfg.get("mode") == "multi" else cfg.get("dry_run_include_intervals", True),
+                    api_scan_workers=cfg.get("api_scan_workers", 10),
+                    stop_event=self._stop_event,
+                    progress=progress,
+                )
+            finally:
+                progress_window.close()
 
             self._emit("[API测试 4/4] 生成测试报告...\n", "#7c5cfc")
             if cfg.get("mode") == "multi":
@@ -515,12 +603,12 @@ class AllocWorker(QObject):
                 summary_success = bool(schedule_options)
                 if schedule_options:
                     title, message, choices = self._build_multi_booking_options_notification(plan, schedule_options, accounts)
-                    selected_id = notify_option_choice(
+                    selected_id = self._select_schedule_option(
                         title + "（测试模式）",
                         message + "\n\n测试模式只记录选择，不会预约。",
-                        choices=choices,
-                        default_choice="abort",
-                        timeout_seconds=cfg.get("notify_timeout", 300),
+                        schedule_options,
+                        "abort",
+                        cfg.get("notify_timeout", 300),
                     )
                     selected_option = next((item for item in schedule_options if item.get("option_id") == selected_id), None)
                     if selected_option:
@@ -534,12 +622,13 @@ class AllocWorker(QObject):
                 final = (plan.get("selection") or {}).get("final_recommendation")
                 if plan.get("success") and final:
                     title, message, choices = self._build_api_booking_options_notification(plan)
-                    selected_id = notify_option_choice(
+                    option_items = self._plan_selectable_options(plan)
+                    selected_id = self._select_seat_option(
                         title + "（测试模式）",
                         message + "\n\n测试模式只记录选择，不会预约；右侧会显示续约预览。",
-                        choices=choices,
-                        default_choice="abort",
-                        timeout_seconds=cfg.get("notify_timeout", 300),
+                        option_items,
+                        "abort",
+                        cfg.get("notify_timeout", 300),
                     )
                     selected_final = self._option_by_id(plan, selected_id) if selected_id != "abort" else None
                     if selected_final:
@@ -613,7 +702,7 @@ class AllocWorker(QObject):
             save_plan_report,
         )
         from core.api_client import APIClient, extract_token
-        from core.desktop_notify import notify_option_choice
+        from core.desktop_notify import ScanProgressWindow
         from core.driver import get_driver
         from core.notifications import send_email
 
@@ -663,28 +752,35 @@ class AllocWorker(QObject):
 
         client = APIClient(token, driver=driver)
 
+        progress_window = ScanProgressWindow("API 多账号扫描进度").start()
+
         def progress(message):
             self._emit(f"  {message}\n", "#8888aa")
+            progress_window.update(message)
 
         # [3/4] API扫描并生成多账号分段方案
         self._emit("[3/4] API扫描空闲座位并生成多账号分段方案（不点击具体座位）...\n", "#7c5cfc")
-        plan = build_api_plan(
-            client,
-            campus=campus,
-            target_room=room,
-            day_start=start,
-            day_end=end,
-            date=cfg.get("date", ""),
-            cross_room=cross_room,
-            cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
-            preferred_seats=cfg.get("preferred_seats", {}),
-            priority_mode=cfg.get("priority_mode", "longest_first"),
-            accounts_count=max_acc,
-            cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
-            include_intervals=True,
-            stop_event=self._stop_event,
-            progress=progress,
-        )
+        try:
+            plan = build_api_plan(
+                client,
+                campus=campus,
+                target_room=room,
+                day_start=start,
+                day_end=end,
+                date=cfg.get("date", ""),
+                cross_room=cross_room,
+                cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
+                preferred_seats=cfg.get("preferred_seats", {}),
+                priority_mode=cfg.get("priority_mode", "longest_first"),
+                accounts_count=max_acc,
+                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                include_intervals=True,
+                api_scan_workers=cfg.get("api_scan_workers", 10),
+                stop_event=self._stop_event,
+                progress=progress,
+            )
+        finally:
+            progress_window.close()
         schedule_options = build_multi_account_schedule_options(
             plan,
             max_segments=max_acc,
@@ -707,12 +803,12 @@ class AllocWorker(QObject):
             return
 
         title, message, choices = self._build_multi_booking_options_notification(plan, schedule_options, accounts)
-        selected_id = notify_option_choice(
+        selected_id = self._select_schedule_option(
             title,
             message,
-            choices=choices,
-            default_choice="abort",
-            timeout_seconds=cfg.get("notify_timeout", 300),
+            schedule_options,
+            "abort",
+            cfg.get("notify_timeout", 300),
         )
         if selected_id == "abort":
             self._emit("  用户取消多账号预约，本次任务结束\n", "#ffab40")
@@ -822,8 +918,8 @@ class AllocWorker(QObject):
         from core.driver import get_driver
         from core.notifications import build_success_email, send_email
         from core.desktop_notify import (
+            ScanProgressWindow,
             notify_and_confirm,
-            notify_option_choice,
             notify_resume_choice,
             build_no_seat_notification,
         )
@@ -873,8 +969,12 @@ class AllocWorker(QObject):
 
         client = APIClient(token, driver=driver)
 
+        scan_progress_window = None
+
         def progress(message):
             self._emit(f"  {message}\n", "#8888aa")
+            if scan_progress_window:
+                scan_progress_window.update(message)
 
         booker = SeatBooker(driver, account=account)
         current = None
@@ -970,23 +1070,29 @@ class AllocWorker(QObject):
         if current is None:
             # [2] API 扫描并生成候选方案
             self._emit("[2] API 扫描空闲座位时间段（不点击具体座位）...\n", "#7c5cfc")
-            first_plan = build_api_plan(
-                client,
-                campus=campus,
-                target_room=room,
-                day_start=day_start,
-                day_end=day_end,
-                date=cfg.get("date", ""),
-                cross_room=cross_room,
-                cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
-                preferred_seats=cfg.get("preferred_seats", {}),
-                priority_mode=cfg.get("priority_mode", "longest_first"),
-                accounts_count=len(accounts),
-                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
-                include_intervals=cfg.get("api_report_include_intervals", True),
-                stop_event=self._stop_event,
-                progress=progress,
-            )
+            scan_progress_window = ScanProgressWindow("API 单账号扫描进度").start()
+            try:
+                first_plan = build_api_plan(
+                    client,
+                    campus=campus,
+                    target_room=room,
+                    day_start=day_start,
+                    day_end=day_end,
+                    date=cfg.get("date", ""),
+                    cross_room=cross_room,
+                    cross_room_rooms=self._cross_room_candidates(cfg, campus, room),
+                    preferred_seats=cfg.get("preferred_seats", {}),
+                    priority_mode=cfg.get("priority_mode", "longest_first"),
+                    accounts_count=len(accounts),
+                    cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                    include_intervals=cfg.get("api_report_include_intervals", True),
+                    api_scan_workers=cfg.get("api_scan_workers", 10),
+                    stop_event=self._stop_event,
+                    progress=progress,
+                )
+            finally:
+                scan_progress_window.close()
+                scan_progress_window = None
             report_path = save_plan_report(first_plan, prefix="api_booking_plan")
             self._emit("\n" + format_plan_summary(first_plan, dry_run=False) + "\n", "#00e676" if first_plan.get("success") else "#ff5252")
             self._emit(f"API方案报告: {report_path}\n", "#00c8ff")
@@ -998,12 +1104,13 @@ class AllocWorker(QObject):
                 return
 
             title, msg, choices = self._build_api_booking_options_notification(first_plan)
-            selected_id = notify_option_choice(
+            option_items = self._plan_selectable_options(first_plan)
+            selected_id = self._select_seat_option(
                 title,
                 msg,
-                choices=choices,
-                default_choice="abort",
-                timeout_seconds=cfg.get("notify_timeout", 300),
+                option_items,
+                "abort",
+                cfg.get("notify_timeout", 300),
             )
             if selected_id == "abort":
                 self._emit("  用户取消预约，本次任务结束\n", "#ffab40")
@@ -1129,23 +1236,29 @@ class AllocWorker(QObject):
                     f"[{resume_pending_slot.get('room_name')}]\n",
                     "#ffab40",
                 )
-            next_plan = build_api_plan(
-                client,
-                campus=campus,
-                target_room=current.room_name,
-                day_start=current.end_time,
-                day_end=day_end,
-                date=cfg.get("date", ""),
-                cross_room=cross_room,
-                cross_room_rooms=self._cross_room_candidates(cfg, campus, current.room_name),
-                preferred_seats=scan_preferred_seats,
-                priority_mode=scan_priority_mode,
-                accounts_count=len(accounts),
-                cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
-                include_intervals=cfg.get("api_report_include_intervals", True),
-                stop_event=self._stop_event,
-                progress=progress,
-            )
+            scan_progress_window = ScanProgressWindow("API 下一段扫描进度").start()
+            try:
+                next_plan = build_api_plan(
+                    client,
+                    campus=campus,
+                    target_room=current.room_name,
+                    day_start=current.end_time,
+                    day_end=day_end,
+                    date=cfg.get("date", ""),
+                    cross_room=cross_room,
+                    cross_room_rooms=self._cross_room_candidates(cfg, campus, current.room_name),
+                    preferred_seats=scan_preferred_seats,
+                    priority_mode=scan_priority_mode,
+                    accounts_count=len(accounts),
+                    cross_room_min_gain_minutes=cfg.get("cross_room_min_gain_minutes", 0),
+                    include_intervals=cfg.get("api_report_include_intervals", True),
+                    api_scan_workers=cfg.get("api_scan_workers", 10),
+                    stop_event=self._stop_event,
+                    progress=progress,
+                )
+            finally:
+                scan_progress_window.close()
+                scan_progress_window = None
             resume_pending_slot = None
             report_path = save_plan_report(next_plan, prefix="api_booking_plan")
             self._emit("\n" + format_plan_summary(next_plan, dry_run=False) + "\n", "#00e676" if next_plan.get("success") else "#ffab40")
@@ -1191,12 +1304,13 @@ class AllocWorker(QObject):
                 self._emit("  自动模式: 无需用户确认\n", "#8888aa")
             else:
                 title, msg, choices = self._build_next_seat_options_notification(current, next_plan)
-                selected_id = notify_option_choice(
+                option_items = self._plan_selectable_options(next_plan)
+                selected_id = self._select_seat_option(
                     title,
                     msg,
-                    choices=choices,
-                    default_choice="abort",
-                    timeout_seconds=cfg.get("notify_timeout", 300),
+                    option_items,
+                    "abort",
+                    cfg.get("notify_timeout", 300),
                 )
                 confirmed = selected_id != "abort"
                 selected_next = self._option_by_id(next_plan, selected_id) if confirmed else None
@@ -1355,6 +1469,8 @@ class AllocWorker(QObject):
 
     def _plan_selectable_options(self, plan: dict) -> list:
         selection = plan.get("selection", {}) or {}
+        cfg = plan.get("config", {}) or {}
+        target_room = cfg.get("target_room", "")
         options = list(selection.get("selectable_options") or [])
         final = selection.get("final_recommendation")
         if not options and final:
@@ -1365,6 +1481,7 @@ class AllocWorker(QObject):
             item = dict(option)
             item.setdefault("option_id", f"opt{idx}")
             item.setdefault("title", f"候选{idx}")
+            item.setdefault("target_room", target_room)
             normalized.append(item)
         return normalized
 
@@ -1384,6 +1501,17 @@ class AllocWorker(QObject):
         )
 
     def _build_api_booking_options_notification(self, plan: dict) -> tuple:
+        cfg = plan.get("config", {}) or {}
+        options = self._plan_selectable_options(plan)
+        title = "💺 座位预约选择"
+        lines = [
+            f"📍 {cfg.get('campus', '')} / {cfg.get('target_room', '')}",
+            f"⏱️ {cfg.get('effective_range', '')}",
+            "👇 从列表里选一个候选座位，确认后再执行预约。",
+        ]
+        choices = [(option.get("option_id"), f"候选{idx}") for idx, option in enumerate(options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
         """构建首次预约候选选择弹窗。"""
         cfg = plan.get("config", {}) or {}
         selection = plan.get("selection", {}) or {}
@@ -1407,6 +1535,17 @@ class AllocWorker(QObject):
         return title, "\n".join(lines), choices
 
     def _build_next_seat_options_notification(self, current, plan: dict) -> tuple:
+        cfg = plan.get("config", {}) or {}
+        options = self._plan_selectable_options(plan)
+        title = "🔄 换座候选选择"
+        lines = [
+            f"当前: {current.room_name} / 座位{current.seat_num} / {current.start_time}-{current.end_time}",
+            f"下一段范围: {cfg.get('effective_range', '')}",
+            "👇 选择下一段座位；取消则保持当前预约。",
+        ]
+        choices = [(option.get("option_id"), f"候选{idx}") for idx, option in enumerate(options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
         """构建单账号下一段候选选择弹窗。"""
         cfg = plan.get("config", {}) or {}
         options = self._plan_selectable_options(plan)
@@ -1432,6 +1571,21 @@ class AllocWorker(QObject):
         return title, "\n".join(lines), choices
 
     def _build_multi_booking_options_notification(self, plan: dict, schedule_options: list, accounts: list) -> tuple:
+        cfg = plan.get("config", {}) or {}
+        title = "🧩 多账号方案选择"
+        pool_count = 0
+        if schedule_options:
+            pool_count = int(schedule_options[0].get("candidate_pool_count") or len(schedule_options))
+        lines = [
+            f"📍 {cfg.get('campus', '')} / {cfg.get('target_room', '')}",
+            f"⏱️ {cfg.get('effective_range', '')}    👥 {len(accounts)} 个账号",
+            f"🧠 已生成 {pool_count or len(schedule_options)} 套候选，精选 {len(schedule_options)} 套展示。",
+            "",
+            "👇 从列表中选择一套完整方案；确认后依次登录账号并预约。",
+        ]
+        choices = [(option.get("option_id"), f"方案{idx}") for idx, option in enumerate(schedule_options, start=1)]
+        choices.append(("abort", "取消"))
+        return title, "\n".join(lines), choices
         """构建多账号多套方案选择弹窗。"""
         cfg = plan.get("config", {}) or {}
         title = "多账号预约选择 - API 已生成多套方案"

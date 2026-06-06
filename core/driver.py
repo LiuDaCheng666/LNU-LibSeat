@@ -1,5 +1,8 @@
 import os
+import atexit
+import subprocess
 import sys
+import threading
 from selenium import webdriver
 from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -12,6 +15,9 @@ def _cfg(attr, default=""):
     return getattr(config, attr, default)
 
 logger = get_logger(__name__)
+_ACTIVE_DRIVERS = {}
+_ACTIVE_DRIVERS_LOCK = threading.Lock()
+_ORPHAN_CLEANUP_DONE = False
 
 
 def _default_browser() -> str:
@@ -120,6 +126,113 @@ def _validate_executable(path: str) -> bool:
     return os.path.exists(path)
 
 
+def _service_process(driver):
+    service = getattr(driver, "service", None)
+    return getattr(service, "process", None)
+
+
+def _stop_driver_service(driver) -> None:
+    service = getattr(driver, "service", None)
+    proc = _service_process(driver)
+    try:
+        if proc and proc.poll() is None:
+            proc.terminate()
+            try:
+                proc.wait(timeout=2)
+            except Exception:
+                proc.kill()
+    except Exception:
+        pass
+    try:
+        if service:
+            service.stop()
+    except Exception:
+        pass
+
+
+def _unregister_driver(driver) -> None:
+    with _ACTIVE_DRIVERS_LOCK:
+        _ACTIVE_DRIVERS.pop(id(driver), None)
+
+
+def _register_driver(driver):
+    if not driver:
+        return driver
+    with _ACTIVE_DRIVERS_LOCK:
+        _ACTIVE_DRIVERS[id(driver)] = driver
+    if getattr(driver, "_lnu_libseat_quit_tracked", False):
+        return driver
+
+    original_quit = driver.quit
+
+    def tracked_quit(*args, **kwargs):
+        try:
+            return original_quit(*args, **kwargs)
+        finally:
+            _stop_driver_service(driver)
+            _unregister_driver(driver)
+
+    try:
+        driver._lnu_libseat_original_quit = original_quit
+        driver.quit = tracked_quit
+        driver._lnu_libseat_quit_tracked = True
+    except Exception:
+        pass
+    return driver
+
+
+def cleanup_active_drivers() -> None:
+    """Best-effort cleanup for webdriver sessions created by this process."""
+    with _ACTIVE_DRIVERS_LOCK:
+        drivers = list(_ACTIVE_DRIVERS.values())
+    for driver in drivers:
+        try:
+            driver.quit()
+        except Exception:
+            _stop_driver_service(driver)
+            _unregister_driver(driver)
+
+
+def cleanup_orphan_driver_processes() -> int:
+    """Kill orphan webdriver processes whose parent process no longer exists.
+
+    This intentionally leaves normal msedge/chrome browser processes alone.
+    """
+    global _ORPHAN_CLEANUP_DONE
+    if _ORPHAN_CLEANUP_DONE or sys.platform != "win32":
+        return 0
+    _ORPHAN_CLEANUP_DONE = True
+    ps_script = r"""
+$names = @('msedgedriver.exe', 'chromedriver.exe')
+$drivers = Get-CimInstance Win32_Process | Where-Object { $names -contains $_.Name }
+foreach ($p in $drivers) {
+    $parent = Get-Process -Id $p.ParentProcessId -ErrorAction SilentlyContinue
+    if (-not $parent) {
+        Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+        Write-Output "$($p.Name):$($p.ProcessId)"
+    }
+}
+"""
+    try:
+        result = subprocess.run(
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", ps_script],
+            capture_output=True,
+            text=True,
+            timeout=4,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+    except Exception as exc:
+        logger.debug("Orphan webdriver cleanup skipped: %s", exc)
+        return 0
+
+    killed = [line.strip() for line in (result.stdout or "").splitlines() if line.strip()]
+    if killed:
+        logger.info("Cleaned orphan webdriver processes: %s", ", ".join(killed))
+    elif result.returncode not in (0, None):
+        logger.debug("Orphan webdriver cleanup returned %s: %s", result.returncode, (result.stderr or "").strip())
+    return len(killed)
+
+
 def _cleanup_edge_lock_files():
     """Remove stale Edge lock files from the default user data directory."""
     user_data = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "Edge", "User Data")
@@ -156,7 +269,7 @@ def get_driver(user_data_dir: str = None):
         from selenium.webdriver.safari.service import Service as SafariService
         drv = webdriver.Safari(service=SafariService(), options=opts)
         drv.set_page_load_timeout(30)
-        return drv
+        return _register_driver(drv)
 
     if user_data_dir:
         opts.add_argument(f'--user-data-dir={user_data_dir}')
@@ -170,7 +283,7 @@ def get_driver(user_data_dir: str = None):
             service = EdgeService(executable_path=DRIVER_PATH, log_path=os.devnull) if browser != 'chrome' else ChromeService(executable_path=DRIVER_PATH, log_path=os.devnull)
             drv = webdriver.Edge(service=service, options=opts) if browser != 'chrome' else webdriver.Chrome(service=service, options=opts)
             drv.set_page_load_timeout(30)
-            return drv
+            return _register_driver(drv)
         else:
             logger.warning("DRIVER_PATH is set but executable not found: %s", DRIVER_PATH)
 
@@ -183,7 +296,7 @@ def get_driver(user_data_dir: str = None):
         try:
             drv = webdriver.Edge(service=service, options=opts) if browser != 'chrome' else webdriver.Chrome(service=service, options=opts)
             drv.set_page_load_timeout(30)
-            return drv
+            return _register_driver(drv)
         except Exception as e:
             logger.warning("webdriver-manager driver failed (version mismatch?): %s", e)
             logger.info("Clearing stale driver caches before Selenium auto-download...")
@@ -199,7 +312,7 @@ def get_driver(user_data_dir: str = None):
             service = ChromeService(log_path=os.devnull)
             drv = webdriver.Chrome(service=service, options=opts)
         drv.set_page_load_timeout(30)
-        return drv
+        return _register_driver(drv)
     except Exception as e:
         msg = (
             "Cannot start browser driver.\n"
@@ -211,4 +324,7 @@ def get_driver(user_data_dir: str = None):
         )
         logger.exception(msg)
         raise RuntimeError(msg) from e
+
+
+atexit.register(cleanup_active_drivers)
 

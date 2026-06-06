@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QDialog, QHBoxLayout, QLabel, QMainWindow, QMessageBox, QPushButton,
-    QTextBrowser, QVBoxLayout, QWidget,
+    QApplication, QComboBox, QDialog, QHBoxLayout, QLabel, QListWidget, QMainWindow,
+    QMessageBox, QPushButton, QTextBrowser, QTextEdit, QVBoxLayout, QWidget,
 )
 from .theme import (
     C, sans, mono, frosted_shadow, soft_glow, RADIUS_SM,
@@ -18,7 +18,7 @@ from .runtime_state import clear_single_runtime_state, load_single_runtime_state
 from .workers.alloc_worker import AllocWorker
 from .widgets.animated_frame import set_low_animation_mode
 
-APP_VERSION = "v2.5.3"
+APP_VERSION = "v2.6.0"
 
 
 def _bj_now():
@@ -83,6 +83,7 @@ class MainWindow(QMainWindow):
         self.worker.finished.connect(self._on_finished)
         self.worker.status_changed.connect(self._on_status)
         self.worker.plan_status_changed.connect(self._on_plan_status)
+        self.worker.selection_requested.connect(self._on_selection_requested)
 
         self.config_panel.action_bar.start_clicked.connect(self._on_start)
         self.config_panel.action_bar.stop_clicked.connect(self._on_stop)
@@ -92,6 +93,7 @@ class MainWindow(QMainWindow):
         self._start_time = None
         self._pulse_timer = None
         self._plan_status = {}
+        self._active_selection_dialog = None
         self._plan_timer = QTimer(self)
         self._plan_timer.timeout.connect(self._refresh_plan_countdown)
         self._plan_timer.start(1000)
@@ -344,12 +346,18 @@ class MainWindow(QMainWindow):
           <p>如果勾选“自动取消并换座”，找到下一段后会跳过确认直接执行。第一次使用不建议开启自动模式。</p>
 
           <h3>3. 多账号分时段</h3>
-          <p>适合多个账号覆盖较长时间。程序会先生成最多 3 套完整方案，你选择一套后，才会依次登录账号预约对应时段。</p>
+          <p>适合多个账号覆盖较长时间。程序会先生成最多 50 套候选方案，你可以筛选排序后选择一套，再依次登录账号预约对应时段。</p>
           <p><b>例子：</b>方案一可能只用账号 A 预约 09:00-15:00；方案二可能是账号 A 预约 09:00-11:00、账号 B 预约 11:00-15:00。账号不是必须用满。</p>
+
+          <h3>4. API 扫描和进度条</h3>
+          <p>扫描时会弹出进度窗口，上方显示总体房间进度，下方显示当前房间座位进度。看到进度条变化时，说明程序正在等待 API 返回，不需要手动点击浏览器。</p>
+          <p>高级设置里的“API 并发”可选 1、5、10、15、20，默认 10。并发越高通常越快，但网络不稳或接口较慢时更容易出现超时并跳过部分座位；并发 1 是逐个扫描，速度慢但更稳。</p>
+          <p>少量座位一直超时并不一定是程序异常。部分房间里有临时损坏、社团专用或状态不可用的座位，这些座位是否固定不可确认，所以程序不会长期排除它们，只会跳过当次超时并继续生成方案。</p>
 
           <h3>重要选项</h3>
           <ul>
             <li><b>跨房间搜索：</b>默认关闭。开启后只扫描你勾选的其他房间；勾选越多，API 请求越多，等待时间越久。最终预约前可手动选择当前房间或其他房间候选。</li>
+            <li><b>API 并发：</b>默认 10。想快一点可以尝试 15 或 20；如果频繁看到超时，可降到 5 或 1。</li>
             <li><b>优先座位：</b>填写常用座位号后，可以选择“优先座位优先”。如果优先座位不可用，会回退到可用的较长时段。</li>
             <li><b>测试模式：</b>只扫描并生成候选/方案，不执行预约、取消或换座。单账号测试模式会显示续约预览，但不会保存为可恢复任务。</li>
             <li><b>主题切换：</b>右上角月亮/太阳按钮可以切换亮色和暗色主题。主题切换需要重启应用才能完全生效。</li>
@@ -365,6 +373,7 @@ class MainWindow(QMainWindow):
             <li>请确认账号密码、校区、房间和时间段填写正确。真实模式会执行预约、取消和换座。</li>
             <li>第一次配置建议先开启测试模式，确认候选和方案合理后再真实运行。</li>
             <li>运行期间尽量不要手动操作自动打开的浏览器窗口，避免页面状态和程序判断不一致。跨房间勾选越多，扫描时间越长。</li>
+            <li>方案弹窗支持筛选和排序；多账号请从列表中选择一整套方案，不要只看第一条推荐。</li>
             <li>换座流程是先确认下一段推荐，再取消当前预约并预约新座位。遇到网络慢、验证码失败或座位被抢，程序会在日志里显示失败原因。</li>
             <li>遇到页面结构变化或异常提示，请保留日志并反馈。</li>
           </ul>
@@ -531,6 +540,7 @@ class MainWindow(QMainWindow):
             "priority_mode",
             "cross_room_min_gain_minutes",
             "api_report_include_intervals",
+            "api_scan_workers",
             "pre_notify",
             "auto_cancel",
             "notify_timeout",
@@ -626,6 +636,351 @@ class MainWindow(QMainWindow):
     def _on_stop(self):
         self.log_panel.log("\n[STOP] 正在停止...\n", C.WARN)
         self.worker.stop()
+        if self._active_selection_dialog is not None:
+            self._active_selection_dialog.reject()
+
+    def _selection_metrics(self, item):
+        return item.get("metrics", {}) or {}
+
+    def _selection_filter_options(self, kind):
+        if kind == "schedule":
+            return ["全部", "完整覆盖", "当前房间", "单账号整段", "跨房间", "有缺口"]
+        if kind == "seat":
+            return ["全部", "推荐", "当前房间"]
+        return ["全部"]
+
+    def _selection_sort_options(self, kind):
+        if kind == "schedule":
+            return ["推荐排序", "时间最长", "缺口最少", "当前房间优先", "账号最少"]
+        if kind == "seat":
+            return ["推荐排序", "时间最长", "当前房间优先"]
+        return ["推荐排序"]
+
+    def _selection_filter_match(self, item, kind, mode):
+        if mode == "全部":
+            return True
+        if kind == "schedule":
+            metrics = self._selection_metrics(item)
+            if mode == "完整覆盖":
+                return bool(metrics.get("full_cover"))
+            if mode == "当前房间":
+                return bool(metrics.get("all_target_room"))
+            if mode == "单账号整段":
+                return bool(metrics.get("full_cover")) and int(metrics.get("segment_count", 0) or 0) == 1
+            if mode == "跨房间":
+                return int(metrics.get("cross_room_segments", 0) or 0) > 0
+            if mode == "有缺口":
+                return int(metrics.get("gap_minutes", 0) or 0) > 0
+        if kind == "seat":
+            if mode == "推荐":
+                return bool(item.get("is_recommended"))
+            if mode == "当前房间":
+                return str(item.get("target_room", "")) and str(item.get("room_name", "")) == str(item.get("target_room", ""))
+        return True
+
+    def _selection_sort_key(self, item, kind, mode, original_index):
+        if kind == "schedule":
+            metrics = self._selection_metrics(item)
+            covered = int(metrics.get("covered_minutes", 0) or 0)
+            gap = int(metrics.get("gap_minutes", 0) or 0)
+            segments = int(metrics.get("segment_count", 0) or 0)
+            current = bool(metrics.get("all_target_room"))
+            full = bool(metrics.get("full_cover"))
+            if mode == "时间最长":
+                return (-covered, gap, 0 if current else 1, segments, original_index)
+            if mode == "缺口最少":
+                return (gap, -covered, 0 if current else 1, segments, original_index)
+            if mode == "当前房间优先":
+                return (0 if current else 1, 0 if full else 1, -covered, gap, segments, original_index)
+            if mode == "账号最少":
+                return (segments, 0 if full else 1, -covered, gap, original_index)
+        if kind == "seat":
+            duration = int(item.get("duration_minutes", 0) or 0)
+            current = str(item.get("target_room", "")) and str(item.get("room_name", "")) == str(item.get("target_room", ""))
+            recommended = bool(item.get("is_recommended"))
+            if mode == "时间最长":
+                return (-duration, 0 if recommended else 1, original_index)
+            if mode == "当前房间优先":
+                return (0 if current else 1, -duration, 0 if recommended else 1, original_index)
+        return (original_index,)
+
+    def _selection_line(self, index, item, kind):
+        if kind == "schedule":
+            metrics = self._selection_metrics(item)
+            tags = " ".join(f"[{tag}]" for tag in (item.get("tags") or []))
+            return (
+                f"方案{index} {tags}  覆盖 {metrics.get('covered_minutes', 0)}/"
+                f"{metrics.get('desired_minutes', 0)} 分钟 | {metrics.get('segment_count', 0)} 个账号 | "
+                f"缺口 {metrics.get('gap_minutes', 0)} 分钟 | 换房 {metrics.get('room_changes', 0)} 次"
+            )
+        marker = " ★" if item.get("is_recommended") else ""
+        return (
+            f"候选{index}{marker}  {item.get('title', '候选座位')} | "
+            f"{item.get('room_name')} / 座位{item.get('seat_num')} | "
+            f"{item.get('start')}-{item.get('end')} | {item.get('duration_minutes', 0)} 分钟"
+        )
+
+    def _selection_detail(self, index, item, kind):
+        if kind == "schedule":
+            schedule = item.get("schedule", {}) or {}
+            metrics = self._selection_metrics(item)
+            tags = " ".join(f"[{tag}]" for tag in (item.get("tags") or []))
+            lines = [
+                f"方案{index} {tags}".strip(),
+                f"类型: {item.get('title', '')}",
+                f"覆盖: {metrics.get('covered_minutes', 0)}/{metrics.get('desired_minutes', 0)} 分钟",
+                f"账号: {metrics.get('segment_count', 0)} 个    缺口: {metrics.get('gap_minutes', 0)} 分钟    换房: {metrics.get('room_changes', 0)} 次",
+            ]
+            note = item.get("note")
+            if note:
+                lines.append(f"说明: {note}")
+            if (
+                int(metrics.get("covered_minutes", 0) or 0) < int(metrics.get("desired_minutes", 0) or 0)
+                and int(metrics.get("gap_minutes", 0) or 0) == 0
+            ):
+                lines.append("开始前等待时间未计入缺口，列表仍会按实际覆盖时长排序。")
+            pool_count = item.get("candidate_pool_count")
+            if pool_count:
+                lines.append(f"已生成 {pool_count} 套候选，当前列表最多显示 50 套。")
+            lines.append("")
+            for seg_idx, seg in enumerate(schedule.get("segments", []) or [], start=1):
+                lines.append(
+                    f"账号{seg_idx}: {seg.get('room_name')} / 座位{seg.get('seat_num')} / "
+                    f"{seg.get('start')}-{seg.get('end')} / {seg.get('duration_minutes')} 分钟"
+                )
+                if seg.get("decision_note"):
+                    lines.append(f"  {seg.get('decision_note')}")
+            gaps = schedule.get("gaps", []) or []
+            if gaps:
+                lines.append("")
+                lines.append("未覆盖时段:")
+                for gap in gaps:
+                    lines.append(f"  {gap.get('start')}-{gap.get('end')}")
+            return "\n".join(lines)
+
+        lines = [
+            f"候选{index}" + (" ★ 推荐" if item.get("is_recommended") else ""),
+            f"房间: {item.get('room_name')}",
+            f"座位: {item.get('seat_num')}",
+            f"时间: {item.get('start')}-{item.get('end')} ({item.get('duration_minutes', 0)} 分钟)",
+        ]
+        if item.get("reason"):
+            lines.append(f"说明: {item.get('reason')}")
+        return "\n".join(lines)
+
+    def _on_selection_requested(self, payload):
+        request_id = str(payload.get("request_id", ""))
+        try:
+            choice = self._show_selection_dialog(payload)
+        except Exception as exc:
+            import traceback
+            self.log_panel.log(
+                f"\n[ERROR] 方案选择弹窗创建失败: {type(exc).__name__}: {exc}\n{traceback.format_exc()}\n",
+                C.TERM_RED,
+            )
+            choice = str(payload.get("default_choice", "abort"))
+        self.worker.provide_selection_result(request_id, choice)
+
+    def _show_selection_dialog(self, payload):
+        kind = str(payload.get("kind", "schedule"))
+        title = str(payload.get("title", "方案选择"))
+        message = str(payload.get("message", ""))
+        items = list(payload.get("items") or [])
+        default_choice = str(payload.get("default_choice", "abort"))
+        timeout_seconds = int(payload.get("timeout_seconds", 300) or 0)
+        if not items:
+            return default_choice
+
+        dialog = QDialog(self)
+        self._active_selection_dialog = dialog
+        dialog.setWindowTitle(title)
+        if not self.windowIcon().isNull():
+            dialog.setWindowIcon(self.windowIcon())
+        dialog.setModal(True)
+        dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        dialog.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+        dialog.setFixedSize(980 if kind == "schedule" else 860, 700 if kind == "schedule" else 620)
+        dialog.setStyleSheet(f"""
+            QDialog {{
+                background: {C.GRAY_100};
+                color: {C.TEXT};
+            }}
+            QLabel {{
+                color: {C.TEXT};
+                background: transparent;
+                font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+            }}
+            QComboBox, QListWidget, QTextEdit {{
+                background: {C.INPUT};
+                color: {C.TEXT};
+                border: 1px solid {C.BORDER};
+                border-radius: {RADIUS_SM}px;
+                padding: 6px;
+                font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+                selection-background-color: {C.ACCENT};
+                selection-color: #ffffff;
+            }}
+            QListWidget::item {{
+                min-height: 26px;
+                padding: 3px 6px;
+            }}
+            QPushButton {{
+                background: {C.INPUT_HOVER};
+                color: {C.TEXT};
+                border: 1px solid {C.BORDER};
+                border-radius: {RADIUS_SM}px;
+                padding: 9px 18px;
+                font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+            }}
+            QPushButton#primaryButton {{
+                background: {C.ACCENT};
+                color: #ffffff;
+                border-color: {C.ACCENT};
+                font-weight: 700;
+            }}
+            QPushButton#primaryButton:hover {{
+                background: {C.ACCENT_HOT};
+            }}
+        """)
+
+        root = QVBoxLayout(dialog)
+        root.setContentsMargins(18, 16, 18, 16)
+        root.setSpacing(10)
+
+        header = QWidget()
+        header.setStyleSheet(f"background:{C.FRAMED_BG}; border:1px solid {C.BORDER_ACCENT}; border-radius:{RADIUS_SM}px;")
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(14, 12, 14, 12)
+        header_layout.setSpacing(16)
+
+        icon_label = QLabel()
+        icon_label.setFixedSize(76, 76)
+        icon_pix = self.windowIcon().pixmap(72, 72)
+        if not icon_pix.isNull():
+            icon_label.setPixmap(icon_pix)
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        else:
+            icon_label.setText("座")
+            icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            icon_label.setStyleSheet(f"color:{C.ACCENT}; font-size:30px; font-weight:700; background:transparent;")
+        header_layout.addWidget(icon_label)
+
+        header_text = QVBoxLayout()
+        title_label = QLabel(title)
+        title_label.setStyleSheet(f"font-size:18px; font-weight:700; color:{C.TEXT}; background:transparent;")
+        title_label.setWordWrap(True)
+        msg_label = QLabel(message)
+        msg_label.setStyleSheet(f"font-size:13px; color:{C.TEXT_SEC}; background:transparent; line-height:1.4;")
+        msg_label.setWordWrap(True)
+        header_text.addWidget(title_label)
+        header_text.addWidget(msg_label)
+        header_layout.addLayout(header_text, stretch=1)
+        root.addWidget(header)
+
+        controls = QHBoxLayout()
+        controls.setSpacing(8)
+        controls.addWidget(QLabel("筛选"))
+        filter_box = QComboBox()
+        filter_box.addItems(self._selection_filter_options(kind))
+        controls.addWidget(filter_box)
+        controls.addWidget(QLabel("排序"))
+        sort_box = QComboBox()
+        sort_box.addItems(self._selection_sort_options(kind))
+        controls.addWidget(sort_box)
+        controls.addStretch(1)
+        count_label = QLabel()
+        count_label.setStyleSheet(f"color:{C.TEXT_MUTED};")
+        controls.addWidget(count_label)
+        root.addLayout(controls)
+
+        list_widget = QListWidget()
+        list_widget.setUniformItemSizes(True)
+        list_widget.setMinimumHeight(190 if kind == "schedule" else 160)
+        root.addWidget(list_widget, stretch=4)
+
+        detail = QTextEdit()
+        detail.setReadOnly(True)
+        detail.setMinimumHeight(180)
+        root.addWidget(detail, stretch=5)
+
+        buttons = QHBoxLayout()
+        confirm_btn = QPushButton("确定选择")
+        confirm_btn.setObjectName("primaryButton")
+        cancel_btn = QPushButton("取消")
+        buttons.addWidget(confirm_btn)
+        buttons.addWidget(cancel_btn)
+        buttons.addStretch(1)
+        root.addLayout(buttons)
+
+        indexed_items = list(enumerate(items))
+        visible_items = []
+        choice = {"value": default_choice}
+
+        def refresh_detail():
+            row = list_widget.currentRow()
+            if row < 0 or row >= len(visible_items):
+                detail.setPlainText("没有符合当前筛选条件的方案。")
+                return
+            detail.setPlainText(self._selection_detail(row + 1, visible_items[row], kind))
+
+        def rebuild_items():
+            visible_items.clear()
+            filtered = [
+                (original_idx, item)
+                for original_idx, item in indexed_items
+                if self._selection_filter_match(item, kind, filter_box.currentText())
+            ]
+            filtered.sort(key=lambda pair: self._selection_sort_key(pair[1], kind, sort_box.currentText(), pair[0]))
+            visible_items.extend(item for _idx, item in filtered)
+            list_widget.clear()
+            for index, item in enumerate(visible_items, start=1):
+                list_widget.addItem(self._selection_line(index, item, kind))
+            count_label.setText(f"{len(visible_items)}/{len(items)} 项")
+            if visible_items:
+                list_widget.setCurrentRow(0)
+            refresh_detail()
+
+        def accept_choice():
+            row = list_widget.currentRow()
+            if row < 0 or row >= len(visible_items):
+                choice["value"] = default_choice
+                dialog.reject()
+                return
+            choice["value"] = str(visible_items[row].get("option_id") or default_choice)
+            dialog.accept()
+
+        filter_box.currentTextChanged.connect(rebuild_items)
+        sort_box.currentTextChanged.connect(rebuild_items)
+        list_widget.currentRowChanged.connect(lambda _row: refresh_detail())
+        list_widget.itemDoubleClicked.connect(lambda _item: accept_choice())
+        confirm_btn.clicked.connect(accept_choice)
+        cancel_btn.clicked.connect(dialog.reject)
+        if timeout_seconds > 0:
+            QTimer.singleShot(timeout_seconds * 1000, dialog.reject)
+
+        rebuild_items()
+
+        def bring_to_front():
+            try:
+                if self.isMinimized():
+                    self.showNormal()
+                self.raise_()
+                self.activateWindow()
+                dialog.raise_()
+                dialog.activateWindow()
+                QApplication.alert(dialog, 0)
+            except Exception:
+                pass
+
+        bring_to_front()
+        QTimer.singleShot(80, bring_to_front)
+        QTimer.singleShot(300, bring_to_front)
+        try:
+            dialog.exec()
+        finally:
+            if self._active_selection_dialog is dialog:
+                self._active_selection_dialog = None
+        return choice["value"] if dialog.result() == QDialog.DialogCode.Accepted else default_choice
 
     def _on_log(self, text, color):
         self.log_panel.log(text, color)

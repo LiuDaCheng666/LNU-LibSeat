@@ -1,8 +1,8 @@
 # LNU-LibSeat 项目结构说明
 
-更新日期：2026-06-02
+更新日期：2026-06-06
 
-本文用于说明当前项目的目的、目录职责、主要运行链路、打包规则，以及最近新增的单账号恢复、运行中防误关和首次帮助窗口功能。`env`、`build`、`dist`、`logs`、`__pycache__` 等目录包含虚拟环境、构建产物、日志或缓存，文件数量多且会自动变化，本文只说明目录用途，不逐一列出内部临时文件。
+本文用于说明当前项目的目的、目录职责、主要运行链路、打包规则，以及最近新增的 API 并发扫描、双进度条、方案列表选择、单账号恢复、运行中防误关和首次帮助窗口功能。`env`、`build`、`dist`、`logs`、`__pycache__` 等目录包含虚拟环境、构建产物、日志或缓存，文件数量多且会自动变化，本文只说明目录用途，不逐一列出内部临时文件。
 
 ## 项目目的
 
@@ -27,6 +27,9 @@ LNU-LibSeat 是一个图书馆座位预约桌面工具，使用 PySide6 提供�
 | 首次帮助窗口 | 第一次打开程序自动弹出使用说明；标题栏 `?` 按钮可随时再次打开。 | `ui/main_window.py`, `ui/config_store.py` |
 | 主题切换 | 右上角月亮/太阳按钮切换亮色/暗色主题，切换后需要重启完全生效。 | `ui/main_window.py`, `ui/theme.py` |
 | 低动画模式 | 右上角 `动/低` 按钮暂停动态渐变，保留静态视觉效果，降低窗口可见时 CPU 占用。 | `ui/main_window.py`, `ui/widgets/animated_frame.py`, `ui/config_store.py` |
+| API 并发扫描 | 高级设置支持 `1/5/10/15/20` 并发扫描，默认 `10`；座位超时会跳过当次数据。 | `logic/api_planner.py`, `core/api_client.py`, `ui/panels/config_panel.py` |
+| 双进度条 | API 扫描窗口显示总体房间进度和当前房间座位进度。 | `core/desktop_notify.py`, `ui/workers/alloc_worker.py` |
+| 方案列表选择 | 单账号候选和多账号方案使用 Qt 主题弹窗，支持筛选、排序、滚动和详情预览。 | `ui/main_window.py`, `ui/workers/alloc_worker.py` |
 
 ## 打包命名规则
 
@@ -36,7 +39,7 @@ LNU-LibSeat 是一个图书馆座位预约桌面工具，使用 PySide6 提供�
 
 ```python
 APP_NAME = "LNU-LibSeat"
-APP_VERSION = "v2.5.3"
+APP_VERSION = "v2.6.0"
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 ```
 
@@ -44,9 +47,9 @@ DIST_NAME = f"{APP_NAME}-{APP_VERSION}"
 
 | 产物 | 路径 |
 | --- | --- |
-| 发行文件夹 | `dist/LNU-LibSeat-v2.5.3/` |
-| 压缩包 | `dist/LNU-LibSeat-v2.5.3.zip` |
-| 可执行文件 | `dist/LNU-LibSeat-v2.5.3/LNU-LibSeat.exe` |
+| 发行文件夹 | `dist/LNU-LibSeat-v2.6.0/` |
+| 压缩包 | `dist/LNU-LibSeat-v2.6.0.zip` |
+| 可执行文件 | `dist/LNU-LibSeat-v2.6.0/LNU-LibSeat.exe` |
 
 支持自定义参数：
 

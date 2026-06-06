@@ -13,6 +13,13 @@ README 已使用的截图：
 | `readme-log.png` | 运行日志检测。 |
 | `readme-theme-switch.png` | 主题切换提示。 |
 | `readme-light-theme.png` | 亮色主题界面。 |
+| `readme-v260-api-progress-warning.png` | v2.6.0 API 扫描双进度条。 |
+| `readme-v260-api-progress-light.png` | v2.6.0 亮色 API 扫描进度示例。 |
+| `readme-v260-multi-options.png` | v2.6.0 多账号方案列表。 |
+| `readme-v260-multi-options-tk.png` | v2.6.0 方案列表过渡截图，保留作对比。 |
+| `readme-v260-seat-options.png` | v2.6.0 单账号候选列表。 |
+| `readme-v260-seat-options-light.png` | v2.6.0 亮色单账号候选列表。 |
+| `readme-v260-main-dark.png` | v2.6.0 暗色主界面。 |
 
 可继续补充的截图：
 

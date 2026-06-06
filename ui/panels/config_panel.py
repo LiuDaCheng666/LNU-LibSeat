@@ -621,6 +621,27 @@ class ConfigPanel(QWidget):
         """)
         self.dry_run = _check("仅测试 API 抓取并生成方案（不预约）", default=False)
         self.advanced_section.addWidget(self.dry_run)
+
+        workers_row = QHBoxLayout()
+        workers_row.setSpacing(10)
+        workers_lbl = QLabel("API 并发")
+        workers_lbl.setFont(sans(10))
+        workers_lbl.setStyleSheet(f"color: {C.TEXT_MUTED}; background: transparent;")
+        workers_lbl.setFixedWidth(64)
+        workers_row.addWidget(workers_lbl)
+        self.api_scan_workers = _combo(["1", "5", "10", "15", "20"])
+        self.api_scan_workers.setCurrentText("10")
+        workers_row.addWidget(self.api_scan_workers, stretch=1)
+        self.advanced_section.addLayout(workers_row)
+
+        workers_note = QLabel(
+            "控制每个房间内同时扫描多少个座位 API。1=逐个扫描，速度慢但最稳；"
+            "高并发更快，但请求压力更大，网络波动或接口限流时可能更容易超时。默认 10 比较均衡。"
+        )
+        workers_note.setFont(sans(8))
+        workers_note.setWordWrap(True)
+        workers_note.setStyleSheet(f"color: {C.TEXT_DIM}; background: transparent;")
+        self.advanced_section.addWidget(workers_note)
         gcl.addWidget(self.advanced_section)
 
         bl.addWidget(gcard)
@@ -827,6 +848,9 @@ class ConfigPanel(QWidget):
         # 跨房间
         self.cross_room.setChecked(cfg.get("cross_room", False))
         self.dry_run.setChecked(cfg.get("dry_run", False))
+        workers = str(cfg.get("api_scan_workers", 10))
+        idx = self.api_scan_workers.findText(workers)
+        self.api_scan_workers.setCurrentIndex(idx if idx >= 0 else self.api_scan_workers.findText("10"))
         self.receiver_email.setText(cfg.get("receiver_email", ""))
         self._rebuild_cross_room_options()
 
@@ -877,6 +901,7 @@ class ConfigPanel(QWidget):
             "cross_room": self.cross_room.isChecked(),
             "cross_room_rooms": self._collect_cross_room_rooms(),
             "dry_run": self.dry_run.isChecked(),
+            "api_scan_workers": int(self.api_scan_workers.currentText()),
             "receiver_email": self.receiver_email.text().strip(),
             "mode": self.toggle.mode(),
             "pre_notify": int(self.notify_min.currentText()),

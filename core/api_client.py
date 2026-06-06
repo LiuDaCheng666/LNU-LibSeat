@@ -307,10 +307,11 @@ class APIClient:
 
         started = perf_counter()
         try:
+            request_timeout = 6 if _is_seat_time_path(path) else 10
             if method == "GET":
-                resp = self.session.get(url, params=params, headers=headers, timeout=10)
+                resp = self.session.get(url, params=params, headers=headers, timeout=request_timeout)
             else:
-                resp = self.session.post(url, params=params, json=data or {}, headers=headers, timeout=10)
+                resp = self.session.post(url, params=params, json=data or {}, headers=headers, timeout=request_timeout)
 
             elapsed_ms = int((perf_counter() - started) * 1000)
             try:
@@ -344,6 +345,9 @@ class APIClient:
             )
             logger.debug("📦 [API] %s %s body=%s", method, path, _compact_json(payload))
             return payload
+        except requests.Timeout as e:
+            logger.warning("⚠️ [API] %s %s 请求超时: %s", method, path, e)
+            return {"status": "error", "message": str(e), "timeout": True}
         except requests.RequestException as e:
             logger.warning("⚠️ [API] %s %s 请求失败: %s", method, path, e)
             return {"status": "error", "message": str(e)}

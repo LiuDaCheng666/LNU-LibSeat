@@ -22,6 +22,7 @@ ALLOCATION_MODE = "single"
 
 # ── 测试模式: 只抓取 API 空闲座位并生成方案，不执行预约 ──
 ALLOC_DRY_RUN = False
+API_SCAN_WORKERS = 10
 
 # ── 多账号模式: 最多账号数 (1-3) ──
 ALLOC_MAX_ACCOUNTS = 3

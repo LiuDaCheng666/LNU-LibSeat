@@ -21,6 +21,7 @@ DEFAULT_CONFIG = {
     "day_end": "21:00",
     "mode": "single",
     "dry_run": False,
+    "api_scan_workers": 10,
     "cross_room": False,
     "cross_room_rooms": {},
     "receiver_email": "",

@@ -19,8 +19,8 @@ LNU_Assistant macOS 构建脚本
     python3 build_mac.py
 
 产物：
-    dist/LNU-LibSeat-v5.0.0-macOS-arm64/        <- 发行夹
-    dist/LNU-LibSeat-v5.0.0-macOS-arm64.zip      <- 分发给用户的压缩包
+    dist/LNU-LibSeat-v2.6.0-macOS-arm64/        <- 发行夹
+    dist/LNU-LibSeat-v2.6.0-macOS-arm64.zip      <- 分发给用户的压缩包
 """
 import os
 import platform
@@ -32,7 +32,7 @@ import venv
 ROOT = os.path.dirname(os.path.abspath(__file__))
 APP_NAME = "LNU-LibSeat"
 APP_ICON = "OIP-C.ico"
-APP_VERSION = "v5.0.0"  # 每次发布新版本请修改此处
+APP_VERSION = "v2.6.0"  # 每次发布新版本请修改此处
 ARCH = platform.machine() or "arm64"  # arm64 (Apple Silicon)
 DIST_NAME = f"{APP_NAME}-{APP_VERSION}-macOS-{ARCH}"
 DIST_DIR = os.path.join(ROOT, "dist", DIST_NAME)
